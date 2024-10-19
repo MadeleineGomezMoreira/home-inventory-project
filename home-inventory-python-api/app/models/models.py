@@ -37,3 +37,6 @@ class Home(Base):
 
     # We will define the back-populated relationship to User
     owner: Mapped["User"] = relationship(back_populates="homes")
+
+    def __repr__(self) -> str:
+        return f"Home(id={self.id!r}, home_name={self.home_name!r}, owned_by ={self.owned_by!r})"
