@@ -22,7 +22,7 @@ async def read_all_users(db: AsyncSession = Depends(get_db)):
 
 
 @router.get(
-    "/user/id/{user_id}", response_model=UserResponse
+    "/users/{user_id}", response_model=UserResponse
 )  # Definimos el modelo de respuesta
 async def read_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
     user = await get_user_by_id(db, user_id)
@@ -32,7 +32,7 @@ async def read_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.get(
-    "/user/name/{username}", response_model=UserResponse
+    "/users/name/{username}", response_model=UserResponse
 )  # Definimos el modelo de respuesta
 async def read_user_by_username(username: str, db: Session = Depends(get_db)):
     user = await get_user_by_username(db, username)
