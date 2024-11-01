@@ -30,3 +30,8 @@ class HomeResponse(HomeBase):
         from_attributes=True,
         extra="ignore",
     )
+
+
+class HomesByRoleResponse(HomeBase):
+    OWNER: List[HomeResponse]
+    MEMBER: List[HomeResponse]
