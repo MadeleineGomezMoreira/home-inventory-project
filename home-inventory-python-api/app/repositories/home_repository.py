@@ -1,5 +1,6 @@
 from inspect import _void
 from app.models.models import Home, UserHome, UserRole
+from app.schemas.home import HomeResponse, HomesByRoleResponse
 from app.routes import users
 from app.schemas.home import HomeCreate
 from app.mappers.home_mapper import map_homeCreate_to_home
@@ -62,7 +63,7 @@ async def get_all_homes_by_owner(session: AsyncSession, user_id: int):
 # Find all homes by user (users_homes table)
 async def get_all_homes_by_user_by_role(session: AsyncSession, user_id: int):
     stmt = (
-        select(Home)
+        select(Home, UserHome.role)
         .join(UserHome)
         .filter(
             UserHome.user_id == user_id,
@@ -72,10 +73,19 @@ async def get_all_homes_by_user_by_role(session: AsyncSession, user_id: int):
 
     homes_by_role = {"OWNER": [], "MEMBER": []}
 
-    for home, role in result.scalars().all():
-        homes_by_role[role].append(home)
+    for home, role in result.all():
+        home_response = HomeResponse(
+            id=home.id,
+            home_name=home.home_name,
+            owned_by=home.owned_by,
+        )
+        homes_by_role[role].append(home_response)
 
-    return homes_by_role
+    print(homes_by_role)
+
+    return HomesByRoleResponse(
+        OWNER=homes_by_role["OWNER"], MEMBER=homes_by_role["MEMBER"]
+    )
 
 
 # Find a home by home_id
