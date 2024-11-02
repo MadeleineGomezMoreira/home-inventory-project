@@ -31,8 +31,6 @@ async def create_home(home: HomeCreate, db: AsyncSession = Depends(get_db)):
 
 
 # TODO: see if it works (but before input some homes)
-
-
 @router.get("/homes/{user_id}", response_model=HomesByRoleResponse)
 async def read_all_homes_by_user_by_role(
     user_id: int, db: AsyncSession = Depends(get_db)

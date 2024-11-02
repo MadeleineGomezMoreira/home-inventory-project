@@ -17,11 +17,15 @@ async def save_home(session: AsyncSession, home: HomeCreate):
     await session.refresh(mapped_home)
 
     user_home = UserHome(
-        user_id=mapped_home.owned_by, home_id=mapped_home.id, role=UserRole.OWNER
+        user_id=mapped_home.owned_by, home_id=mapped_home.id, role=UserRole.OWNER.value
     )
+
+    print(f"user_home-ROLE: {user_home.role}")
 
     session.add(user_home)
     await session.commit()
+    await session.refresh(mapped_home)
+    await session.refresh(user_home)
 
     return mapped_home
 
