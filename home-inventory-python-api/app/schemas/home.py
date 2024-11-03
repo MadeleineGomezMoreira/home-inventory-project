@@ -29,9 +29,20 @@ class HomeResponse(HomeBase):
     model_config = ConfigDict(
         from_attributes=True,
         extra="ignore",
+        populate_by_name=True,
+        alias_generator=lambda field: "".join(
+            word.capitalize() if i else word for i, word in enumerate(field.split("_"))
+        ),
     )
 
 
-class HomesByRoleResponse(HomeBase):
+class HomesByRoleResponse(BaseModel):
     OWNER: List[HomeResponse]
     MEMBER: List[HomeResponse]
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=lambda field: "".join(
+            word.capitalize() if i else word for i, word in enumerate(field.split("_"))
+        ),
+    )

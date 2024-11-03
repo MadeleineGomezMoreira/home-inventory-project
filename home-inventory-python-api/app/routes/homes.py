@@ -36,4 +36,4 @@ async def read_all_homes_by_user_by_role(
     user_id: int, db: AsyncSession = Depends(get_db)
 ):
     homes = await get_all_homes_by_user_by_role(db, user_id)
-    return HomesByRoleResponse.model_validate(homes, from_attributes=True)
+    return homes
