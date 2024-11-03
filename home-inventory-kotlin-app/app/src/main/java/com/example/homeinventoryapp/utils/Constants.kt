@@ -26,6 +26,7 @@ object Constants {
     const val UNKNOWN_ERROR = "There was an unknown error"
     const val HOME_NOT_CREATED_ERROR = "The home was not created"
     const val HOME_NOT_DELETED_ERROR = "The home was not deleted"
+    const val EMPTY_MESSAGE = ""
 
     //STATUS CODES
     const val STATUS_CODE_UNAUTHORIZED = "401"
@@ -45,14 +46,21 @@ object Constants {
         "ACCESS DENIED - ONLY USERS WITH GRANTED ACCESS CAN ACCESS THIS FEATURE"
 
     //SCREEN ROUTES
-    const val HOMES_ROUTE = "homes_screen"
+    const val MY_HOMES_ROUTE = "my_homes_screen"
     const val HOME_ROUTE = "home_screen/{homeId}"
     const val HOME_SCREEN_ROUTE = "home_screen"
     const val ACCOUNT_ROUTE = "account_screen/{userId}"
+    const val ROOMS_ROUTE = "rooms_screen/{homeId}"
+    const val SEARCH_ITEMS_ROUTE = "search_items_screen/{homeId}"
 
     //SCREEN NAMES (BOTTOM BAR)
     const val HOME_BAR_NAME = "Home"
     const val HOME_SCREEN_BAR_NAME = "Home Screen"
-    const val HOMES_BAR_NAME = "All of my homes"
+    const val MY_HOMES_BAR_NAME = "All of my homes"
     const val ACCOUNT_BAR_NAME = "Personal Profile"
+    const val ROOMS_BAR_NAME = "Rooms"
+    const val SEARCH_ITEMS_BAR_NAME = "Search Items"
+
+    //NAVIGATION VARIABLES
+    const val HOME_ID = "homeId"
 }

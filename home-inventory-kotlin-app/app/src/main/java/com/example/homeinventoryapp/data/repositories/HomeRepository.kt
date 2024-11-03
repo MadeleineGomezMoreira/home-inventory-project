@@ -2,6 +2,7 @@ package com.example.homeinventoryapp.data.repositories
 
 import com.example.homeinventoryapp.data.remote.HomeRemoteDataSource
 import com.example.homeinventoryapp.domain.model.Home
+import com.example.homeinventoryapp.domain.model.MyHomes
 import com.example.homeinventoryapp.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +14,7 @@ class HomeRepository @Inject constructor(
     private val homeRemoteDataSource: HomeRemoteDataSource,
 ) {
 
-    fun getHomesByUser(id: Int) : Flow<NetworkResult<List<Home>>> {
+    fun getHomesByUser(id: Int) : Flow<NetworkResult<MyHomes>> {
         return flow {
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.getHomesByUser(id)

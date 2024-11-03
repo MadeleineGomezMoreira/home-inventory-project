@@ -7,5 +7,11 @@ import javax.inject.Inject
 class SaveHomeUseCase @Inject constructor(
     private val homeRepository: HomeRepository
 ) {
-    operator fun invoke(home: Home) = homeRepository.saveHome(home)
+    operator fun invoke(homeName: String, userId: Int) = homeRepository.saveHome(
+        Home(
+            id = 0,
+            name = homeName,
+            owner = userId
+        )
+    )
 }
