@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,6 +17,15 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        //load the values from the apiUrl.properties file
+        val apiUrlProperties = project.rootProject.file("apiUrl.properties")
+        val properties = Properties()
+        properties.load(apiUrlProperties.inputStream())
+
+        //we will return an empty string if the property is not found
+        val apiUrl = properties.getProperty("API_URL") ?: ""
+        buildConfigField("String", "BASE_URL", "\"$apiUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -50,6 +61,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-Xlint:deprecation")
     }
 }
 
