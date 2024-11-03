@@ -1,6 +1,7 @@
-from sqlalchemy import ForeignKey, String, Boolean, DateTime
+from sqlalchemy import ForeignKey, String, Boolean, DateTime, Enum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 import datetime
+from enum import Enum as PyEnum
 from app.models.base import Base
 
 
@@ -21,6 +22,15 @@ class User(Base):
 
     # Here we will define the relationship with Home (one user can own multiple homes)
     homes: Mapped[list["Home"]] = relationship(back_populates="owner")
+    user_homes: Mapped[list["UserHome"]] = relationship(
+        "UserHome", back_populates="user"
+    )
+    invitations_sent: Mapped[list["Invitation"]] = relationship(
+        "Invitation", foreign_keys="[Invitation.inviter_id]", back_populates="inviter"
+    )
+    invitations_received: Mapped[list["Invitation"]] = relationship(
+        "Invitation", foreign_keys="[Invitation.invitee_id]", back_populates="invitee"
+    )
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.username!r}, email ={self.email!r}, password = {self.password!r}, activated={self.activated!r}, activation_date = {self.activation_date!r}, activation_code = {self.activation_code!r})"
@@ -37,3 +47,55 @@ class Home(Base):
 
     # We will define the back-populated relationship to User
     owner: Mapped["User"] = relationship(back_populates="homes")
+    users: Mapped[list["UserHome"]] = relationship("UserHome", back_populates="home")
+
+    def __repr__(self) -> str:
+        return f"Home(id={self.id!r}, home_name={self.home_name!r}, owned_by ={self.owned_by!r})"
+
+
+class UserRole(PyEnum):
+    OWNER = "OWNER"
+    MEMBER = "MEMBER"
+
+
+class UserHome(Base):
+    __tablename__ = "users_homes"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    home_id: Mapped[int] = mapped_column(ForeignKey("home.id"), primary_key=True)
+    role: Mapped[str] = mapped_column(Enum("OWNER", "MEMBER"), nullable=False)
+
+    # Optional relationship to facilitate data loading
+    user = relationship("User", back_populates="user_homes")
+    home = relationship("Home", back_populates="users")
+
+
+class InvitationStatus(PyEnum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+
+
+class Invitation(Base):
+    __tablename__ = "invitation"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    inviter_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    invitee_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    status: Mapped[str] = mapped_column(
+        Enum("PENDING", "ACCEPTED", "REJECTED"), default=InvitationStatus.PENDING
+    )
+
+    # Relationships
+    inviter: Mapped["User"] = relationship(
+        "User", foreign_keys=[inviter_id], back_populates="invitations_sent"
+    )
+    invitee: Mapped["User"] = relationship(
+        "User", foreign_keys=[invitee_id], back_populates="invitations_received"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"Invitation(id={self.id!r}, inviter_id={self.inviter_id!r}, "
+            f"invitee_id={self.invitee_id!r}. status={self.status!r}"
+        )

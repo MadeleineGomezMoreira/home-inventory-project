@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
@@ -11,10 +11,7 @@ class UserBase(BaseModel):
     activation_date: Optional[datetime] = None
     activation_code: Optional[str] = None
 
-    class Config:
-        orm_mode = (
-            True  # Esto permite a Pydantic leer datos desde los modelos de SQLAlchemy
-        )
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(UserBase):
@@ -23,11 +20,13 @@ class UserCreate(UserBase):
     email: str  # La dirección de correo electrónico debe ser obligatorio en la creación
 
 
-class UserResponse(UserBase):
-    id: int  # Este campo será retornado cuando devuelvas un usuario existente
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    # Este campo será retornado cuando devuelvas un usuario existente
     #    homes: Optional[List["HomeResponse"]] = (
     #        []
     #    )  # Usarás esto cuando devuelvas relaciones con otros objetos
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
