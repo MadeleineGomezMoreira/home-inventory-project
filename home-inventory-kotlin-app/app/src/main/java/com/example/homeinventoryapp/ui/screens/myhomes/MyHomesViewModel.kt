@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyHomesViewModel @Inject constructor(
-    private val getUserHomesUseCase: GetUserHomesUseCase,
+    private val getUserHomes: GetUserHomesUseCase,
     private val saveHome: SaveHomeUseCase,
 ) : ViewModel() {
 
@@ -76,7 +76,7 @@ class MyHomesViewModel @Inject constructor(
 
     private fun getMyHomes(userId: Int) {
         viewModelScope.launch {
-            getUserHomesUseCase.invoke(userId)
+            getUserHomes.invoke(userId)
                 .collect { result ->
                     when (result) {
                         is NetworkResult.Success -> {

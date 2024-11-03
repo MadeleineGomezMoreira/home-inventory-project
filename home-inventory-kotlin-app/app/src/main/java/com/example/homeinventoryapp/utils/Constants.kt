@@ -6,12 +6,14 @@ object Constants {
 
     //HOMES
     const val GET_HOMES_BY_USER_PATH = "homes/{id}"
+    const val GET_HOME_PATH = "homes/single/{id}"
     const val REGISTER_HOME_PATH = "homes"
     const val DELETE_HOME_PATH = "homes/{id}"
 
     //USERS
     const val GET_USER_BY_USERNAME_PATH = "users/{username}"
     const val GET_USER_BY_ID_PATH = "users/{id}"
+    const val GET_USERS_BY_HOME_ID_PATH = "users/home/{id}"
 
     //REQUEST PARAMETERS
     const val ID_PARAM = "id"
@@ -36,8 +38,12 @@ object Constants {
 
     //LOGGING ERROR MESSAGES
     const val RETRIEVING_HOMES_BY_USER_ERROR = "There was an error while retrieving homes by user"
-    const val RETRIEVING_USER_BY_USERNAME_ERROR = "There was an error while retrieving the user by username"
+    const val RETRIEVING_HOME_BY_ID_ERROR = "There was an error while retrieving a home by its id"
+    const val RETRIEVING_USER_BY_USERNAME_ERROR =
+        "There was an error while retrieving the user by username"
     const val RETRIEVING_USER_BY_ID_ERROR = "There was an error while retrieving the user by id"
+    const val RETRIEVING_USERS_BY_HOME_ID_ERROR =
+        "There was an error while retrieving the users in a home"
     const val SAVING_HOME_ERROR = "There was an error while saving the home"
     const val DELETING_HOME_ERROR = "There was an error while deleting the home"
 

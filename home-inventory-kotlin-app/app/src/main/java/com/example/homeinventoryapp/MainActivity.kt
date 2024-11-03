@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             HomeInventoryAppTheme(
                 darkTheme = false
             ) {
-                Surface(color = MaterialTheme.colorScheme.background){
+                Surface(color = MaterialTheme.colorScheme.background) {
                     Navigation()
                 }
             }

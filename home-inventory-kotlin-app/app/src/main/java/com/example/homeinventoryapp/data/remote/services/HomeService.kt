@@ -16,6 +16,9 @@ interface HomeService {
     @GET(Constants.GET_HOMES_BY_USER_PATH)
     suspend fun getHomesByUser(@Path(Constants.ID_PARAM) id: Int): Response<MyHomesResponse>
 
+    @GET(Constants.GET_HOME_PATH)
+    suspend fun getHome(@Path(Constants.ID_PARAM) id: Int): Response<HomeResponse>
+
     @POST(Constants.REGISTER_HOME_PATH)
     suspend fun saveHome(@Body home: HomeRequest): Response<HomeResponse>
 

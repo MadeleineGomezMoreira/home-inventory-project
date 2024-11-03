@@ -2,11 +2,11 @@ package com.example.homeinventoryapp.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class UserResponse (
+data class UserResponse(
     @SerializedName("id")
-    val id : Int,
+    val id: Int,
     @SerializedName("username")
-    val username : String,
+    val username: String,
     @SerializedName("email")
-    val email : String
+    val email: String
 )

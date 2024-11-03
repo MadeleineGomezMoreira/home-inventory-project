@@ -25,7 +25,8 @@ fun LoadingProgressComponent(showComponent: Boolean, modifier: Modifier = Modifi
 fun ShowSnackbarMessage(
     message: String? = null,
     snackbarHostState: SnackbarHostState,
-    onMessageShown: () -> Unit) {
+    onMessageShown: () -> Unit
+) {
     LaunchedEffect(message) {
         message?.let {
             snackbarHostState.showSnackbar(

@@ -2,9 +2,9 @@ package com.example.homeinventoryapp.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class MyHomesResponse (
+data class MyHomesResponse(
     @SerializedName("OWNER")
     var ownedHomes: List<HomeResponse>,
     @SerializedName("MEMBER")
-    var memberHomes : List<HomeResponse>
+    var memberHomes: List<HomeResponse>
 )

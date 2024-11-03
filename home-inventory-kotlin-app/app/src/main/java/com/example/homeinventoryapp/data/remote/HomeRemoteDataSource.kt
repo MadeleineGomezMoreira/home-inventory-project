@@ -2,7 +2,6 @@ package com.example.homeinventoryapp.data.remote
 
 import com.example.homeinventoryapp.data.model.toHome
 import com.example.homeinventoryapp.data.model.toHomeRequest
-import com.example.homeinventoryapp.data.model.toHomeResponse
 import com.example.homeinventoryapp.data.model.toMyHomes
 import com.example.homeinventoryapp.data.remote.services.HomeService
 import com.example.homeinventoryapp.domain.model.Home
@@ -15,6 +14,35 @@ import javax.inject.Inject
 class HomeRemoteDataSource @Inject constructor(
     private val homeService: HomeService
 ) : BaseApiResponse() {
+
+    suspend fun getHome(id: Int): NetworkResult<Home> {
+        return try {
+            val result = safeApiCall { homeService.getHome(id) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.toHome()?.let { home ->
+                        NetworkResult.Success(home)
+                    } ?: NetworkResult.Error(Constants.NO_HOME_FOUND_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(
+                        result.message ?: Constants.EMPTY_MESSAGE,
+                        Constants.RETRIEVING_HOME_BY_ID_ERROR
+                    )
+                    NetworkResult.Error(result.message ?: Constants.NO_HOME_FOUND_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.RETRIEVING_HOME_BY_ID_ERROR)
+            NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
 
     suspend fun getHomesByUser(id: Int): NetworkResult<MyHomes> {
         return try {

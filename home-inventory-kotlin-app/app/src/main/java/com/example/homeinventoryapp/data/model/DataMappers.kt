@@ -1,6 +1,7 @@
 package com.example.homeinventoryapp.data.model
 
 import com.example.homeinventoryapp.domain.model.Home
+import com.example.homeinventoryapp.domain.model.HomeUsers
 import com.example.homeinventoryapp.domain.model.MyHomes
 import com.example.homeinventoryapp.domain.model.User
 
@@ -35,9 +36,17 @@ fun UserResponse.toUser(): User {
     )
 }
 
-fun MyHomesResponse.toMyHomes() : MyHomes {
+fun MyHomesResponse.toMyHomes(): MyHomes {
     return MyHomes(
         ownedHomes = ownedHomes.map { it.toHome() },
         memberHomes = memberHomes.map { it.toHome() }
     )
+}
+
+fun HomeUsersResponse.toHomeUsers(): HomeUsers {
+    return HomeUsers(
+        owner = owner.toUser(),
+        members = members.map { it.toUser() }
+    )
+
 }
