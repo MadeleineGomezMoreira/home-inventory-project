@@ -22,6 +22,12 @@ async def read_all_homes(db: AsyncSession = Depends(get_db)):
     return [HomeResponse.model_validate(home, from_attributes=True) for home in homes]
 
 
+@router.get("/homes/single/{home_id}", response_model=HomeResponse)
+async def get_home(home_id: int, db: AsyncSession = Depends(get_db)):
+    home = await get_home_by_id(db, home_id)
+    return HomeResponse.model_validate(home, from_attributes=True)
+
+
 @router.post(
     "/homes/", status_code=status.HTTP_201_CREATED, response_model=HomeResponse
 )
@@ -30,7 +36,6 @@ async def create_home(home: HomeCreate, db: AsyncSession = Depends(get_db)):
     return HomeResponse.model_validate(created_home, from_attributes=True)
 
 
-# TODO: see if it works (but before input some homes)
 @router.get("/homes/{user_id}", response_model=HomesByRoleResponse)
 async def read_all_homes_by_user_by_role(
     user_id: int, db: AsyncSession = Depends(get_db)
