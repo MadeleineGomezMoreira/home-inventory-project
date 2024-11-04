@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.homeinventoryapp.domain.usecases.home.GetHomeUseCase
 import com.example.homeinventoryapp.domain.usecases.user.GetHomeUsersUseCase
 import com.example.homeinventoryapp.utils.NetworkResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getHome: GetHomeUseCase,
     private val getHomeUsers: GetHomeUsersUseCase,

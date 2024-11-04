@@ -61,7 +61,8 @@ fun Navigation() {
                     homeId = retrievedHomeId.toInt(),
                     onUserClicked = { userId ->
                         //navController.navigate("user_profile_screen/$userId")
-                    }
+                    },
+
                 )
             }
         }

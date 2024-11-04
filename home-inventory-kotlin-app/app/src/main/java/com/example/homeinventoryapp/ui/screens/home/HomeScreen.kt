@@ -44,8 +44,11 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
 
+    //TODO: if owner id matches userId, show delete + edit buttons
+
     LaunchedEffect(homeId) {
         viewModel.handleEvent(HomeContract.HomeEvent.GetHome(homeId))
+        viewModel.handleEvent(HomeContract.HomeEvent.GetHomeUsers(homeId))
     }
 
     if (uiState.userId != null) {
