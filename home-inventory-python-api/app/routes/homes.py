@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, status
 from app.schemas.home import HomeResponse, HomeCreate, HomesByRoleResponse
 from app.database.db_engine import get_db
 from app.repositories.home_repository import (
