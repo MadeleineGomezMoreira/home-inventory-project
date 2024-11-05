@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.user import UserResponse, UserCreate
+from app.schemas.user import UserResponse, UserCreate, UsersByRoleResponse
 from app.database.db_engine import get_db
 from app.repositories.user_repository import (
     get_all_users,
+    get_all_users_by_home_by_role,
     get_user_by_id,
     get_user_by_username,
     save_user,
@@ -47,3 +48,11 @@ async def read_user_by_username(username: str, db: Session = Depends(get_db)):
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     created_user = await save_user(db, user)
     return UserResponse.model_validate(created_user, from_attributes=True)
+
+
+@router.get("/users/home/{home_id}", response_model=UsersByRoleResponse)
+async def read_all_users_by_home_by_role(
+    home_id: int, db: AsyncSession = Depends(get_db)
+):
+    users = await get_all_users_by_home_by_role(db, home_id)
+    return users

@@ -1,7 +1,5 @@
-from inspect import _void
 from app.models.models import Home, UserHome, UserRole
 from app.schemas.home import HomeCreate, HomeResponse, HomesByRoleResponse
-from app.routes import users
 from app.mappers.home_mapper import map_homeCreate_to_home
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select

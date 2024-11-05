@@ -30,3 +30,15 @@ class UserResponse(BaseModel):
     #    )  # Usarás esto cuando devuelvas relaciones con otros objetos
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
+
+
+class UsersByRoleResponse(BaseModel):
+    OWNER: UserResponse
+    MEMBER: List[UserResponse]
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=lambda field: "".join(
+            word.capitalize() if i else word for i, word in enumerate(field.split("_"))
+        ),
+    )

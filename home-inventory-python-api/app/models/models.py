@@ -48,6 +48,7 @@ class Home(Base):
     # We will define the back-populated relationship to User
     owner: Mapped["User"] = relationship(back_populates="homes")
     users: Mapped[list["UserHome"]] = relationship("UserHome", back_populates="home")
+    rooms: Mapped[list["Room"]] = relationship("Room", back_populates="home")
 
     def __repr__(self) -> str:
         return f"Home(id={self.id!r}, home_name={self.home_name!r}, owned_by ={self.owned_by!r})"
@@ -99,3 +100,20 @@ class Invitation(Base):
             f"Invitation(id={self.id!r}, inviter_id={self.inviter_id!r}, "
             f"invitee_id={self.invitee_id!r}. status={self.status!r}"
         )
+
+
+class Room(Base):
+    __tablename__ = "room"
+
+    # Define the primary key with auto-increment
+    id: Mapped[int] = mapped_column(primary_key=True)
+    room_name: Mapped[str] = mapped_column(String(15))
+
+    # Foreign key pointing to the Home table
+    home_id: Mapped[int] = mapped_column(ForeignKey("home.id"))
+
+    # Relationship back to Home
+    home: Mapped["Home"] = relationship("Home", back_populates="rooms")
+
+    def __repr__(self) -> str:
+        return f"Room(room_id={self.room_id!r}, room_name={self.room_name!r}, home_id={self.home_id!r})"
