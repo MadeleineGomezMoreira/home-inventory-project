@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, status
-from app.schemas.home import HomeResponse, HomeCreate, HomesByRoleResponse
+from httpx import delete
+from app.schemas.home import HomeResponse, HomeCreate, HomesByRoleResponse, HomeRequest
 from app.database.db_engine import get_db
 from app.repositories.home_repository import (
     get_all_homes,
     get_all_homes_by_user_by_role,
-    get_all_homes_by_owner,
-    get_home_by_name_and_owner,
     get_home_by_id,
     save_home,
     update_home,
+    delete_home,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,3 +41,14 @@ async def read_all_homes_by_user_by_role(
 ):
     homes = await get_all_homes_by_user_by_role(db, user_id)
     return homes
+
+
+@router.put("/homes/", response_model=HomeResponse)
+async def update_single_home(home: HomeRequest, db: AsyncSession = Depends(get_db)):
+    updated_home = await update_home(db, home)
+    return HomeResponse.model_validate(updated_home, from_attributes=True)
+
+
+@router.delete("/homes/{home_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_single_home(home_id: int, db: AsyncSession = Depends(get_db)):
+    await delete_home(db, home_id)

@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.schemas.room import RoomResponse, RoomCreate
+from app.schemas.room import RoomRequest, RoomResponse, RoomCreate
 from app.database.db_engine import get_db
-from app.repositories.room_repository import get_rooms_in_home, save_room
+from app.repositories.room_repository import (
+    delete_room,
+    get_rooms_in_home,
+    save_room,
+    update_room,
+    delete_room,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -11,6 +17,17 @@ router = APIRouter()
 async def read_all_rooms_in_home(home_id: int, db: AsyncSession = Depends(get_db)):
     rooms = await get_rooms_in_home(db, home_id)
     return [RoomResponse.model_validate(room, from_attributes=True) for room in rooms]
+
+
+@router.put("/rooms/", response_model=RoomResponse)
+async def update_given_room(room: RoomRequest, db: AsyncSession = Depends(get_db)):
+    updated_room = await update_room(db, room)
+    return RoomResponse.model_validate(updated_room, from_attributes=True)
+
+
+@router.delete("/rooms/{room_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_single_room(room_id: int, db: AsyncSession = Depends(get_db)):
+    await delete_room(db, room_id)
 
 
 @router.post(

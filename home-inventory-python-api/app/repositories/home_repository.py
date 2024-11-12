@@ -1,8 +1,9 @@
-from app.models.models import Home, UserHome, UserRole
-from app.schemas.home import HomeCreate, HomeResponse, HomesByRoleResponse
+from app.models.models import Home, UserHome, UserRole, Room, Invitation
+from app.schemas.home import HomeCreate, HomeRequest, HomeResponse, HomesByRoleResponse
 from app.mappers.home_mapper import map_homeCreate_to_home
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import delete, select
+from app.exceptions.custom_exceptions import HomeNotFoundError
 
 # TODO: implement error handling
 
@@ -17,8 +18,6 @@ async def save_home(session: AsyncSession, home: HomeCreate):
     user_home = UserHome(
         user_id=mapped_home.owned_by, home_id=mapped_home.id, role=UserRole.OWNER.value
     )
-
-    print(f"user_home-ROLE: {user_home.role}")
 
     session.add(user_home)
     await session.commit()
@@ -37,23 +36,40 @@ async def join_home_as_member(session: AsyncSession, user_id: int, home_id: int)
     return None
 
 
-# Update an existing home (works the same as save)
-async def update_home(session: AsyncSession, home: HomeCreate):
-    mapped_home = map_homeCreate_to_home(home)
-    session.add(mapped_home)
+# Update an existing home
+async def update_home(session: AsyncSession, home_request: HomeRequest):
+    existing_home = await session.get(Home, home_request.id)
+
+    if existing_home is None:
+        raise HomeNotFoundError("Home was not found")
+
+    existing_home.home_name = home_request.home_name
+
     await session.commit()
+    await session.refresh(existing_home)
+
+    return existing_home
+
+
+# Delete an existing home
+async def delete_home(session: AsyncSession, home_id: int):
+    async with session.begin():
+        home = await session.get(Home, home_id)
+
+        if home is None:
+            raise HomeNotFoundError("Home was not found")
+
+        # TODO: change this whenever I actually include furniture, compartments and items here
+
+        await session.execute(delete(Room).where(Room.home_id == home_id))
+        await session.execute(delete(Invitation).where(Invitation.home_id == home_id))
+        await session.execute(delete(UserHome).where(UserHome.home_id == home_id))
+        await session.execute(delete(Home).where(Home.id == home_id))
 
 
 # Find all homes
 async def get_all_homes(session: AsyncSession):
     result = await session.execute(select(Home))
-    return result.scalars().all()
-
-
-# Find all homes by owner
-async def get_all_homes_by_owner(session: AsyncSession, user_id: int):
-    stmt = select(Home).where(Home.owned_by == user_id)
-    result = await session.execute(stmt)
     return result.scalars().all()
 
 
@@ -88,14 +104,5 @@ async def get_all_homes_by_user_by_role(session: AsyncSession, user_id: int):
 # Find a home by home_id
 async def get_home_by_id(session: AsyncSession, home_id: int):
     stmt = select(Home).where(Home.id == home_id)
-    result = await session.execute(stmt)
-    return result.scalars().first()
-
-
-# Find a home by home_name and owner_id (owned_by -> owner_id)
-async def get_home_by_name_and_owner(
-    session: AsyncSession, home_name: str, user_id: int
-):
-    stmt = select(Home).where(Home.home_name == home_name & Home.owned_by == user_id)
     result = await session.execute(stmt)
     return result.scalars().first()

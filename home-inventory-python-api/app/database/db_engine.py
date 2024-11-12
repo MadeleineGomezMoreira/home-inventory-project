@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from app.database.config import DATABASE_URL
 from app.models.base import Base
+from sqlalchemy import text
 
 
 engine = create_async_engine(
-    "sqlite+aiosqlite:///db.sqlite3",
-    connect_args={"check_same_thread": False},
+    DATABASE_URL,
     echo=True,
 )
 SessionLocal = async_sessionmaker(engine)
