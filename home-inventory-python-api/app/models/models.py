@@ -40,7 +40,7 @@ class Home(Base):
     __tablename__ = "home"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    home_name: Mapped[str] = mapped_column(String(15))
+    home_name: Mapped[str] = mapped_column(String(30))
 
     # Foreign key pointing to the User table
     owned_by: Mapped[int] = mapped_column(ForeignKey("user.id"))
@@ -83,6 +83,7 @@ class Invitation(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     inviter_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     invitee_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    home_id: Mapped[int] = mapped_column(ForeignKey("home.id"))
     status: Mapped[str] = mapped_column(
         Enum("PENDING", "ACCEPTED", "REJECTED"), default=InvitationStatus.PENDING
     )
@@ -107,7 +108,7 @@ class Room(Base):
 
     # Define the primary key with auto-increment
     id: Mapped[int] = mapped_column(primary_key=True)
-    room_name: Mapped[str] = mapped_column(String(15))
+    room_name: Mapped[str] = mapped_column(String(30))
 
     # Foreign key pointing to the Home table
     home_id: Mapped[int] = mapped_column(ForeignKey("home.id"))

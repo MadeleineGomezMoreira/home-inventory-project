@@ -27,3 +27,14 @@ class RoomCreate(BaseModel):
             word.capitalize() if i else word for i, word in enumerate(field.split("_"))
         ),
     )
+
+
+class RoomRequest(RoomResponse):
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=lambda field: "".join(
+            word.capitalize() if i else word for i, word in enumerate(field.split("_"))
+        ),
+    )

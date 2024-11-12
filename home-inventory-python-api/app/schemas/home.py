@@ -46,3 +46,16 @@ class HomesByRoleResponse(BaseModel):
             word.capitalize() if i else word for i, word in enumerate(field.split("_"))
         ),
     )
+
+
+class HomeRequest(BaseModel):
+    id: int
+    home_name: str
+    model_config = ConfigDict(from_attributes=True)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=lambda field: "".join(
+            word.capitalize() if i else word for i, word in enumerate(field.split("_"))
+        ),
+    )
