@@ -1,5 +1,5 @@
 from app.models.models import Room
-from app.schemas.room import RoomCreate, RoomRequest
+from app.schemas.room import RoomCreate
 
 
 def map_roomCreate_to_room(room_create: RoomCreate) -> Room:
