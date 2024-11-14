@@ -16,6 +16,18 @@ class UserNotFoundError(Exception):
     pass
 
 
+class UserAlreadyInHomeException(Exception):
+    """Raised when a user is already found in the home when trying to invite them to that home."""
+
+    pass
+
+
+class InvitationNotFoundError(Exception):
+    """Raised when a user is not found in the database."""
+
+    pass
+
+
 class SavingRoomError(Exception):
     """Raised when there is an error during the action of saving a user into the database."""
 
