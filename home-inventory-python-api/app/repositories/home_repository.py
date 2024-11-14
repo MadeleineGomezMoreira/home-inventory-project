@@ -29,7 +29,7 @@ async def save_home(session: AsyncSession, home: HomeCreate):
 
 # Join a home as a member
 async def join_home_as_member(session: AsyncSession, user_id: int, home_id: int):
-    user_home = UserHome(user_id=user_id, home_id=home_id, role=UserRole.MEMBER)
+    user_home = UserHome(user_id=user_id, home_id=home_id, role=UserRole.MEMBER.value)
     session.add(user_home)
     await session.commit()
 
