@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
+# This returns 201 and null in the body
 @router.post("/invitations/send/", status_code=status.HTTP_201_CREATED)
 async def send_invitation(
     invitation: InvitationRequest, db: AsyncSession = Depends(get_db)
