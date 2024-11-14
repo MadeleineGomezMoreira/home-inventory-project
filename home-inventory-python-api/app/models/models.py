@@ -71,12 +71,6 @@ class UserHome(Base):
     home = relationship("Home", back_populates="users")
 
 
-class InvitationStatus(PyEnum):
-    PENDING = "PENDING"
-    ACCEPTED = "ACCEPTED"
-    REJECTED = "REJECTED"
-
-
 class Invitation(Base):
     __tablename__ = "invitation"
 
@@ -84,9 +78,6 @@ class Invitation(Base):
     inviter_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     invitee_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     home_id: Mapped[int] = mapped_column(ForeignKey("home.id"))
-    status: Mapped[str] = mapped_column(
-        Enum("PENDING", "ACCEPTED", "REJECTED"), default=InvitationStatus.PENDING
-    )
 
     # Relationships
     inviter: Mapped["User"] = relationship(
@@ -99,7 +90,7 @@ class Invitation(Base):
     def __repr__(self) -> str:
         return (
             f"Invitation(id={self.id!r}, inviter_id={self.inviter_id!r}, "
-            f"invitee_id={self.invitee_id!r}. status={self.status!r}"
+            f"invitee_id={self.invitee_id!r}"
         )
 
 

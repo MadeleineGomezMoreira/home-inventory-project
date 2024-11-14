@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, status
-from httpx import delete
 from app.schemas.home import HomeResponse, HomeCreate, HomesByRoleResponse, HomeRequest
 from app.database.db_engine import get_db
 from app.repositories.home_repository import (
