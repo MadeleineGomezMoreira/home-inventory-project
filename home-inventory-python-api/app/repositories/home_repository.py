@@ -1,4 +1,4 @@
-from app.models.models import Home, UserHome, UserRole, Room, Invitation
+from app.models.models import Home, UserHome, UserRole, Room, Invitation, Furniture
 from app.schemas.home import HomeCreate, HomeRequest, HomeResponse, HomesByRoleResponse
 from app.mappers.home_mapper import map_homeCreate_to_home
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -59,8 +59,14 @@ async def delete_home(session: AsyncSession, home_id: int):
         if home is None:
             raise HomeNotFoundError("Home was not found")
 
-        # TODO: change this whenever I actually include furniture, compartments and items here
+        # TODO: change this whenever I actually include compartments and items here
 
+        # Find all rooms in the home
+        rooms = await session.execute(select(Room.id).where(Room.home_id == home_id))
+        room_ids = [row.id for row in rooms.scalars()]
+
+        # Delete furniture associated with the rooms
+        await session.execute(delete(Furniture).where(Furniture.room_id.in_(room_ids)))
         await session.execute(delete(Room).where(Room.home_id == home_id))
         await session.execute(delete(Invitation).where(Invitation.home_id == home_id))
         await session.execute(delete(UserHome).where(UserHome.home_id == home_id))

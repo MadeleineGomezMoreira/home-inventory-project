@@ -10,6 +10,12 @@ class HomeNotFoundError(Exception):
     pass
 
 
+class FurnitureNotFoundError(Exception):
+    """Raised when a piece of furniture is not found in the database."""
+
+    pass
+
+
 class UserNotFoundError(Exception):
     """Raised when a user is not found in the database."""
 
