@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username: Mapped[str] = mapped_column(String(30))
+    username: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[str] = mapped_column(String(100))
     password: Mapped[str] = mapped_column(String(100))
 
@@ -107,5 +107,27 @@ class Room(Base):
     # Relationship back to Home
     home: Mapped["Home"] = relationship("Home", back_populates="rooms")
 
+    # Relationship back to Furniture
+    furnitures: Mapped[list["Furniture"]] = relationship(
+        "Furniture", back_populates="room"
+    )
+
     def __repr__(self) -> str:
         return f"Room(room_id={self.room_id!r}, room_name={self.room_name!r}, home_id={self.home_id!r})"
+
+
+class Furniture(Base):
+    __tablename__ = "furniture"
+
+    # Define the primary key with auto-increment
+    id: Mapped[int] = mapped_column(primary_key=True)
+    furn_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    # Foreign key pointing to the Room table
+    room_id: Mapped[int] = mapped_column(ForeignKey("room.id"), nullable=False)
+
+    # Relationship back to Room
+    room: Mapped["Room"] = relationship("Room", back_populates="furnitures")
+
+    def __repr__(self) -> str:
+        return f"Furniture(id={self.id!r}, furn_name={self.furn_name!r}, room_id={self.room_id!r})"
