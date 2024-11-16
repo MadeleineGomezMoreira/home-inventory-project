@@ -22,6 +22,12 @@ class UserAlreadyInHomeException(Exception):
     pass
 
 
+class UserNotInHomeException(Exception):
+    """Raised when a user is not found in the home they are to be kicked from."""
+
+    pass
+
+
 class InvitationAlreadyExistsException(Exception):
     """Raised when an invitation to that user to join a specific home is already found in the database."""
 
