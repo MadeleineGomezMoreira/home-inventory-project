@@ -3,7 +3,7 @@ from app.schemas.home import HomeCreate, HomeRequest, HomeResponse, HomesByRoleR
 from app.mappers.home_mapper import map_homeCreate_to_home
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select
-from app.exceptions.custom_exceptions import HomeNotFoundError
+from app.exceptions.custom_exceptions import HomeNotFoundError, UserNotInHomeException
 
 # TODO: implement error handling
 
@@ -65,6 +65,25 @@ async def delete_home(session: AsyncSession, home_id: int):
         await session.execute(delete(Invitation).where(Invitation.home_id == home_id))
         await session.execute(delete(UserHome).where(UserHome.home_id == home_id))
         await session.execute(delete(Home).where(Home.id == home_id))
+
+
+# Remove a user from a home
+async def remove_user_from_home(session: AsyncSession, home_id: int, user_id: int):
+    stmt = select(UserHome).where(
+        UserHome.user_id == user_id,
+        UserHome.home_id == home_id,
+        UserHome.role == UserRole.MEMBER.value,
+    )
+
+    result = await session.execute(stmt)
+    user_home = result.scalar_one_or_none()
+
+    if not user_home:
+        raise UserNotInHomeException("User is not a member of the specified home.")
+
+    # Delete the UserHome record if found
+    await session.delete(user_home)
+    await session.commit()
 
 
 # Find all homes

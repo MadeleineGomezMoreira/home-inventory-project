@@ -8,6 +8,7 @@ from app.repositories.home_repository import (
     save_home,
     update_home,
     delete_home,
+    remove_user_from_home,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,3 +52,10 @@ async def update_single_home(home: HomeRequest, db: AsyncSession = Depends(get_d
 @router.delete("/homes/{home_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_single_home(home_id: int, db: AsyncSession = Depends(get_db)):
     await delete_home(db, home_id)
+
+
+@router.delete(
+    "/homes/{home_id}/kick/{user_id}/", status_code=status.HTTP_204_NO_CONTENT
+)
+async def kick_user(home_id: int, user_id: int, db: AsyncSession = Depends(get_db)):
+    await remove_user_from_home(db, home_id, user_id)
