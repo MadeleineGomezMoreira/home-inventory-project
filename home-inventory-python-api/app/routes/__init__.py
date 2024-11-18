@@ -5,6 +5,7 @@ from app.routes.rooms import router as rooms_router
 from app.routes.invitations import router as invitations_router
 from app.routes.furnitures import router as furnitures_router
 from app.routes.compartments import router as compartments_router
+from app.routes.items import router as items_router
 
 api_router = APIRouter()
 
@@ -15,3 +16,4 @@ api_router.include_router(rooms_router, tags=["rooms"])
 api_router.include_router(invitations_router, tags=["invitations"])
 api_router.include_router(furnitures_router, tags=["furnitures"])
 api_router.include_router(compartments_router, tags=["compartments"])
+api_router.include_router(items_router, tags=["items"])

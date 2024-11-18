@@ -34,10 +34,7 @@ async def delete_furniture(session: AsyncSession, furn_id: int):
                 "The piece of furniture was not found in the room"
             )
 
-        # TODO: change this whenever I actually include compartments and items here
-
-        await session.execute(delete(Compartment).where(Compartment.furn_id == furn_id))
-
+        # Delete the piece of furniture
         await session.execute(delete(Furniture).where(Furniture.id == furn_id))
 
 

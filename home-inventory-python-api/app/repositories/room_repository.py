@@ -39,13 +39,13 @@ async def update_room(session: AsyncSession, room_request: RoomRequest):
 # Delete an existing room
 async def delete_room(session: AsyncSession, room_id: int):
     async with session.begin():
+        # Retrieve the room object
         room = await session.get(Room, room_id)
 
         if room is None:
             raise RoomNotFoundError("The room was not found")
 
-        # TODO: change this whenever I actually include furniture, compartments and items here
-
+        # Delete the room
         await session.delete(room)
 
 

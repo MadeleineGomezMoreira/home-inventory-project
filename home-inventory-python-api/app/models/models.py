@@ -1,5 +1,14 @@
-from sqlalchemy import ForeignKey, String, Boolean, DateTime, Enum
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import (
+    ForeignKey,
+    String,
+    Boolean,
+    DateTime,
+    Enum,
+    Table,
+    Integer,
+    Column,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
 from enum import Enum as PyEnum
 from app.models.base import Base
@@ -21,15 +30,23 @@ class User(Base):
     activation_code: Mapped[str] = mapped_column(String(45), default="N/A")
 
     # Here we will define the relationship with Home (one user can own multiple homes)
-    homes: Mapped[list["Home"]] = relationship(back_populates="owner")
+    homes: Mapped[list["Home"]] = relationship(
+        back_populates="owner", cascade="delete, delete-orphan"
+    )
     user_homes: Mapped[list["UserHome"]] = relationship(
-        "UserHome", back_populates="user"
+        "UserHome", back_populates="user", cascade="delete, delete-orphan"
     )
     invitations_sent: Mapped[list["Invitation"]] = relationship(
-        "Invitation", foreign_keys="[Invitation.inviter_id]", back_populates="inviter"
+        "Invitation",
+        foreign_keys="[Invitation.inviter_id]",
+        back_populates="inviter",
+        cascade="delete, delete-orphan",
     )
     invitations_received: Mapped[list["Invitation"]] = relationship(
-        "Invitation", foreign_keys="[Invitation.invitee_id]", back_populates="invitee"
+        "Invitation",
+        foreign_keys="[Invitation.invitee_id]",
+        back_populates="invitee",
+        cascade="delete, delete-orphan",
     )
 
     def __repr__(self) -> str:
@@ -47,8 +64,15 @@ class Home(Base):
 
     # We will define the back-populated relationship to User
     owner: Mapped["User"] = relationship(back_populates="homes")
-    users: Mapped[list["UserHome"]] = relationship("UserHome", back_populates="home")
-    rooms: Mapped[list["Room"]] = relationship("Room", back_populates="home")
+    users: Mapped[list["UserHome"]] = relationship(
+        "UserHome", back_populates="home", cascade="delete, delete-orphan"
+    )
+    rooms: Mapped[list["Room"]] = relationship(
+        "Room", back_populates="home", cascade="delete, delete-orphan"
+    )
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag", back_populates="home", cascade="delete, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"Home(id={self.id!r}, home_name={self.home_name!r}, owned_by ={self.owned_by!r})"
@@ -109,11 +133,11 @@ class Room(Base):
 
     # Relationship back to Furniture
     furnitures: Mapped[list["Furniture"]] = relationship(
-        "Furniture", back_populates="room"
+        "Furniture", back_populates="room", cascade="delete, delete-orphan"
     )
 
     def __repr__(self) -> str:
-        return f"Room(room_id={self.room_id!r}, room_name={self.room_name!r}, home_id={self.home_id!r})"
+        return f"Room(room_id={self.id!r}, room_name={self.room_name!r}, home_id={self.home_id!r})"
 
 
 class Furniture(Base):
@@ -131,7 +155,7 @@ class Furniture(Base):
 
     # Relationship back to Compartment (one furniture can have multiple compartments)
     compartments: Mapped[list["Compartment"]] = relationship(
-        "Compartment", back_populates="furniture"
+        "Compartment", back_populates="furniture", cascade="delete, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -153,5 +177,71 @@ class Compartment(Base):
         "Furniture", back_populates="compartments"
     )
 
+    # Relationship to Item
+    items: Mapped[list["Item"]] = relationship(
+        "Item", back_populates="compartment", cascade="delete, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"Compartment(id={self.id!r}, comp_name={self.comp_name!r}, furn_id={self.furn_id!r})"
+
+
+# Association table for many-to-many relationship between Items and Tags
+item_tag_association = Table(
+    "items_tags",
+    Base.metadata,
+    Column("item_id", Integer, ForeignKey("item.id"), primary_key=True),
+    Column("tag_id", Integer, ForeignKey("tag.id"), primary_key=True),
+)
+
+
+class Item(Base):
+    __tablename__ = "item"
+
+    # Define the primary key with auto-increment
+    id: Mapped[int] = mapped_column(primary_key=True)
+    item_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    # Foreign key pointing to the Compartment table
+    comp_id: Mapped[int] = mapped_column(ForeignKey("compartment.id"), nullable=False)
+
+    # Relationship back to Compartment
+    compartment: Mapped["Compartment"] = relationship(
+        "Compartment", back_populates="items"
+    )
+
+    # Many-to-many relationship with Tag
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag",
+        secondary=item_tag_association,
+        back_populates="items",
+        cascade="delete, save-update",
+        lazy="selectin",
+    )
+
+    def __repr__(self) -> str:
+        return f"Item(id={self.id!r}, item_name={self.item_name!r}, comp_id={self.comp_id!r})"
+
+
+class Tag(Base):
+    __tablename__ = "tag"
+
+    # Define the primary key with auto-increment
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tag_name: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+
+    # Add home_id as a foreign key pointing to the Home table
+    home_id: Mapped[int] = mapped_column(ForeignKey("home.id"), nullable=False)
+
+    # Relationship back to Home
+    home: Mapped["Home"] = relationship("Home", back_populates="tags")
+
+    # Many-to-many relationship with Item
+    items: Mapped[list["Item"]] = relationship(
+        "Item", secondary=item_tag_association, back_populates="tags", lazy="selectin"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"Tag(id={self.id!r}, tag_name={self.tag_name!r}, home_id={self.home_id!r})"
+        )

@@ -10,6 +10,12 @@ class CompartmentNotFoundError(Exception):
     pass
 
 
+class ItemNotFoundError(Exception):
+    """Raised when a compartment is not found in the database."""
+
+    pass
+
+
 class HomeNotFoundError(Exception):
     """Raised when a home is not found in the database."""
 
