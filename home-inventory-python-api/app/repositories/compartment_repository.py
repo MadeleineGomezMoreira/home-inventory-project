@@ -42,7 +42,7 @@ async def update_compartment(
     return existing_compartment
 
 
-# Delete a compartment
+# Delete a compartment (and in the future all of its items)
 async def delete_compartment(session: AsyncSession, comp_id: int):
     async with session.begin():
         compartment = await session.get(Compartment, comp_id)
