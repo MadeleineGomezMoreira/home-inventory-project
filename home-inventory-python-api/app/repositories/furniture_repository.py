@@ -1,4 +1,4 @@
-from app.models.models import Furniture
+from app.models.models import Furniture, Compartment
 from app.schemas import furniture
 from app.schemas.furniture import FurnitureCreate, FurnitureRequest
 from app.mappers.furniture_mapper import map_furniture_create_to_furniture
@@ -35,6 +35,8 @@ async def delete_furniture(session: AsyncSession, furn_id: int):
             )
 
         # TODO: change this whenever I actually include compartments and items here
+
+        await session.execute(delete(Compartment).where(Compartment.furn_id == furn_id))
 
         await session.execute(delete(Furniture).where(Furniture.id == furn_id))
 

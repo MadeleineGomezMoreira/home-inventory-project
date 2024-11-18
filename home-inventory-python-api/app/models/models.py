@@ -129,5 +129,29 @@ class Furniture(Base):
     # Relationship back to Room
     room: Mapped["Room"] = relationship("Room", back_populates="furnitures")
 
+    # Relationship back to Compartment (one furniture can have multiple compartments)
+    compartments: Mapped[list["Compartment"]] = relationship(
+        "Compartment", back_populates="furniture"
+    )
+
     def __repr__(self) -> str:
         return f"Furniture(id={self.id!r}, furn_name={self.furn_name!r}, room_id={self.room_id!r})"
+
+
+class Compartment(Base):
+    __tablename__ = "compartment"
+
+    # Define the primary key for compartment
+    id: Mapped[int] = mapped_column(primary_key=True)
+    comp_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    # Foreign key pointing to the Furniture table
+    furn_id: Mapped[int] = mapped_column(ForeignKey("furniture.id"), nullable=False)
+
+    # Relationship back to Furniture
+    furniture: Mapped["Furniture"] = relationship(
+        "Furniture", back_populates="compartments"
+    )
+
+    def __repr__(self) -> str:
+        return f"Compartment(id={self.id!r}, comp_name={self.comp_name!r}, furn_id={self.furn_id!r})"

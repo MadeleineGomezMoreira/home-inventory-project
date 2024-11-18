@@ -1,4 +1,12 @@
-from app.models.models import User, UserHome, Furniture, Invitation, Home, Room
+from app.models.models import (
+    User,
+    UserHome,
+    Furniture,
+    Invitation,
+    Home,
+    Room,
+    Compartment,
+)
 from app.schemas.user import UserCreate, UserResponse, UsersByRoleResponse
 from app.mappers.user_mapper import map_userCreate_to_user
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,9 +56,10 @@ async def get_all_users_by_home_by_role(session: AsyncSession, home_id: int):
     )
 
 
-# Delete an existing user by user.id
+# Delete an existing user by user.id, including furniture and compartments
 async def delete_user(session: AsyncSession, user_id: int):
-    user = session.query(User).filter_by(id=user_id).first()
+    # Fetch the user to delete
+    user = await session.get(User, user_id)
 
     if user is None:
         raise UserNotFoundError(f"User with ID {user_id} not found")
@@ -63,11 +72,26 @@ async def delete_user(session: AsyncSession, user_id: int):
     owned_homes = await session.execute(select(Home.id).where(Home.owned_by == user_id))
     home_ids = [row.id for row in owned_homes.scalars()]
 
-    # Delete all furniture associated with the user's homes
+    # If the user owns homes, we need to delete the furniture and compartments in those homes
     if home_ids:
         rooms = await session.execute(select(Room.id).where(Room.home_id.in_(home_ids)))
         room_ids = [row.id for row in rooms.scalars()]
+
+        # Delete all furniture associated with the user's homes and their compartments
         if room_ids:
+            # Fetch all furniture IDs in these rooms
+            furniture = await session.execute(
+                select(Furniture.id).where(Furniture.room_id.in_(room_ids))
+            )
+            furniture_ids = [row.id for row in furniture.scalars()]
+
+            # Delete the compartments associated with the furniture
+            if furniture_ids:
+                await session.execute(
+                    delete(Compartment).where(Compartment.furn_id.in_(furniture_ids))
+                )
+
+            # Delete the furniture items
             await session.execute(
                 delete(Furniture).where(Furniture.room_id.in_(room_ids))
             )
@@ -83,11 +107,11 @@ async def delete_user(session: AsyncSession, user_id: int):
             # Delete the user's homes
             await session.execute(delete(Home).where(Home.owned_by == user_id))
 
-        # Delete user-home relationships where the user is a member
-        await session.execute(delete(UserHome).where(UserHome.user_id == user_id))
+    # Delete user-home relationships where the user is a member (if any)
+    await session.execute(delete(UserHome).where(UserHome.user_id == user_id))
 
-        # Delete the user itself
-        await session.execute(delete(User).where(User.id == user_id))
+    # Finally, delete the user itself
+    await session.execute(delete(User).where(User.id == user_id))
 
 
 # Update an existing user (works the same as save)
