@@ -64,53 +64,7 @@ async def delete_user(session: AsyncSession, user_id: int):
     if user is None:
         raise UserNotFoundError(f"User with ID {user_id} not found")
 
-    # Delete invitations where the user is the inviter or invitee
-    await session.execute(delete(Invitation).where(Invitation.inviter_id == user_id))
-    await session.execute(delete(Invitation).where(Invitation.invitee_id == user_id))
-
-    # Find homes owned by the user
-    owned_homes = await session.execute(select(Home.id).where(Home.owned_by == user_id))
-    home_ids = [row.id for row in owned_homes.scalars()]
-
-    # If the user owns homes, we need to delete the furniture and compartments in those homes
-    if home_ids:
-        rooms = await session.execute(select(Room.id).where(Room.home_id.in_(home_ids)))
-        room_ids = [row.id for row in rooms.scalars()]
-
-        # Delete all furniture associated with the user's homes and their compartments
-        if room_ids:
-            # Fetch all furniture IDs in these rooms
-            furniture = await session.execute(
-                select(Furniture.id).where(Furniture.room_id.in_(room_ids))
-            )
-            furniture_ids = [row.id for row in furniture.scalars()]
-
-            # Delete the compartments associated with the furniture
-            if furniture_ids:
-                await session.execute(
-                    delete(Compartment).where(Compartment.furn_id.in_(furniture_ids))
-                )
-
-            # Delete the furniture items
-            await session.execute(
-                delete(Furniture).where(Furniture.room_id.in_(room_ids))
-            )
-
-            # Delete rooms in the user's homes
-            await session.execute(delete(Room).where(Room.home_id.in_(home_ids)))
-
-            # Delete user-home relationships for the user's homes
-            await session.execute(
-                delete(UserHome).where(UserHome.home_id.in_(home_ids))
-            )
-
-            # Delete the user's homes
-            await session.execute(delete(Home).where(Home.owned_by == user_id))
-
-    # Delete user-home relationships where the user is a member (if any)
-    await session.execute(delete(UserHome).where(UserHome.user_id == user_id))
-
-    # Finally, delete the user itself
+    # Delete the user
     await session.execute(delete(User).where(User.id == user_id))
 
 

@@ -6,6 +6,8 @@ from app.models.models import (
     Invitation,
     Furniture,
     Compartment,
+    Item,
+    Tag,
 )
 from app.schemas.home import HomeCreate, HomeRequest, HomeResponse, HomesByRoleResponse
 from app.mappers.home_mapper import map_homeCreate_to_home
@@ -68,35 +70,7 @@ async def delete_home(session: AsyncSession, home_id: int):
         if home is None:
             raise HomeNotFoundError("Home was not found")
 
-        # Find all rooms in the home
-        rooms = await session.execute(select(Room.id).where(Room.home_id == home_id))
-        room_ids = [row.id for row in rooms.scalars()]
-
-        # Find all furniture related to the rooms in the home
-        furniture = await session.execute(
-            select(Furniture.id).where(Furniture.room_id.in_(room_ids))
-        )
-        furniture_ids = [row.id for row in furniture.scalars()]
-
-        # Delete all compartments related to the furniture
-        if furniture_ids:
-            await session.execute(
-                delete(Compartment).where(Compartment.furn_id.in_(furniture_ids))
-            )
-
-        # Delete furniture associated with the rooms
-        await session.execute(delete(Furniture).where(Furniture.room_id.in_(room_ids)))
-
-        # Delete rooms in the home
-        await session.execute(delete(Room).where(Room.home_id == home_id))
-
-        # Delete invitations related to the home
-        await session.execute(delete(Invitation).where(Invitation.home_id == home_id))
-
-        # Delete user-home associations
-        await session.execute(delete(UserHome).where(UserHome.home_id == home_id))
-
-        # Finally, delete the home
+        # Delete the home
         await session.execute(delete(Home).where(Home.id == home_id))
 
 

@@ -12,6 +12,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select
 
 
+# Retrieve received invitations
+
+# Retrieve sent invitations
+
+
 # Send an invitation
 async def create_invitation(
     session: AsyncSession, invitation_request: InvitationRequest
