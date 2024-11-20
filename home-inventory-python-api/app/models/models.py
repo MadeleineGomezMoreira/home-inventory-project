@@ -118,6 +118,14 @@ class Invitation(Base):
             f"invitee_id={self.invitee_id!r}"
         )
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "inviter_id": self.inviter_id,
+            "invitee_id": self.invitee_id,
+            "home_id": self.home_id,
+        }
+
 
 class Room(Base):
     __tablename__ = "room"

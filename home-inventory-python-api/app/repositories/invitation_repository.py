@@ -13,8 +13,10 @@ from sqlalchemy import delete, select
 
 
 # Retrieve received invitations
-
-# Retrieve sent invitations
+async def get_received_invitations(session: AsyncSession, user_id: int):
+    stmt = select(Invitation).where(Invitation.invitee_id == user_id)
+    result = await session.execute(stmt)
+    return result.scalars().all()
 
 
 # Send an invitation

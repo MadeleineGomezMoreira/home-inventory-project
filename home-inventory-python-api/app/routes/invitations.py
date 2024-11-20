@@ -5,10 +5,20 @@ from app.repositories.invitation_repository import (
     create_invitation,
     take_up_invitation,
     reject_invitation,
+    get_received_invitations,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+
+
+@router.get("/invitations/{user_id}", response_model=list[InvitationResponse])
+async def read_received_invitations(user_id: int, db: AsyncSession = Depends(get_db)):
+    invitations = await get_received_invitations(db, user_id)
+    return [
+        InvitationResponse.model_validate(invitation.to_dict())
+        for invitation in invitations
+    ]
 
 
 # This returns 201 and null in the body
