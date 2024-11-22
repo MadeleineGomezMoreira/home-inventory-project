@@ -1,4 +1,4 @@
-package com.example.homeinventoryapp.data.model
+package com.example.homeinventoryapp.data.model.user
 
 import com.google.gson.annotations.SerializedName
 

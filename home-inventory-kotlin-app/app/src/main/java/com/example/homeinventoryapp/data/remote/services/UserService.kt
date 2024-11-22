@@ -1,7 +1,7 @@
 package com.example.homeinventoryapp.data.remote.services
 
-import com.example.homeinventoryapp.data.model.HomeUsersResponse
-import com.example.homeinventoryapp.data.model.UserResponse
+import com.example.homeinventoryapp.data.model.homeusers.HomeUsersResponse
+import com.example.homeinventoryapp.data.model.user.UserResponse
 import com.example.homeinventoryapp.utils.Constants
 import retrofit2.Response
 import retrofit2.http.GET

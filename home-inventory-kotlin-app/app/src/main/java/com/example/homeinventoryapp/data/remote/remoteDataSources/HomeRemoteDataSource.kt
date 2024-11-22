@@ -1,8 +1,9 @@
-package com.example.homeinventoryapp.data.remote
+package com.example.homeinventoryapp.data.remote.remoteDataSources
 
 import com.example.homeinventoryapp.data.model.toHome
 import com.example.homeinventoryapp.data.model.toHomeRequest
 import com.example.homeinventoryapp.data.model.toMyHomes
+import com.example.homeinventoryapp.data.remote.BaseApiResponse
 import com.example.homeinventoryapp.data.remote.services.HomeService
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.MyHomes

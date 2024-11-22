@@ -1,4 +1,4 @@
-package com.example.homeinventoryapp.data.model
+package com.example.homeinventoryapp.data.model.home
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,6 @@
 package com.example.homeinventoryapp.data.repositories
 
-import com.example.homeinventoryapp.data.remote.HomeRemoteDataSource
+import com.example.homeinventoryapp.data.remote.remoteDataSources.HomeRemoteDataSource
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.MyHomes
 import com.example.homeinventoryapp.utils.NetworkResult
