@@ -18,7 +18,7 @@ async def get_items_from_compartment(session: AsyncSession, comp_id: int):
 async def get_item(session: AsyncSession, item_id: int):
     stmt = select(Item).where(Item.id == item_id)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    return result.scalar_one_or_none()
 
 
 # Retrieve item by name and tag

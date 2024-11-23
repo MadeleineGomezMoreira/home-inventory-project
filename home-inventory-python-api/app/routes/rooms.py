@@ -7,10 +7,17 @@ from app.repositories.room_repository import (
     save_room,
     update_room,
     delete_room,
+    get_room,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+
+
+@router.get("/rooms/{room_id}", response_model=RoomResponse)
+async def get_single_room(room_id: int, db: AsyncSession = Depends(get_db)):
+    room = await get_room(db, room_id)
+    return RoomResponse.model_validate(room, from_attributes=True)
 
 
 @router.get("/rooms/home/{home_id}", response_model=list[RoomResponse])

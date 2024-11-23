@@ -8,6 +8,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.exceptions.custom_exceptions import RoomNotFoundError
 
 
+# Get a room by its id
+async def get_room(session: AsyncSession, room_id: int):
+    stmt = select(Room).where(Room.id == room_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
 # Save a new room
 async def save_room(session: AsyncSession, room: RoomCreate):
     try:

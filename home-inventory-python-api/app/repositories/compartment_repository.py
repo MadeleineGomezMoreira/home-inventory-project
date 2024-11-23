@@ -13,6 +13,13 @@ async def get_compartments(session: AsyncSession, furn_id: int):
     return result.scalars().all()
 
 
+# Retrieve a compartment by its id
+async def get_compartment(session: AsyncSession, comp_id: int):
+    stmt = select(Compartment).where(Compartment.id == comp_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
 # Save a new compartment
 async def save_compartment(session: AsyncSession, compartment: CompartmentCreate):
     mapped_compartment = map_compartmentCreate_to_Compartment(compartment)

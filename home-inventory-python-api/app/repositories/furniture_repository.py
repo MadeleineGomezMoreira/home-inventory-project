@@ -24,6 +24,13 @@ async def get_furniture_from_room(session: AsyncSession, room_id: int):
     return result.scalars().all()
 
 
+# Retrieve a piece of furniture by its id
+async def get_furniture(session: AsyncSession, furn_id: int):
+    stmt = select(Furniture).where(Furniture.id == furn_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
 # Delete a piece of furniture
 async def delete_furniture(session: AsyncSession, furn_id: int):
     async with session.begin():

@@ -13,6 +13,7 @@ from app.schemas.furniture import FurnitureCreate, FurnitureRequest, FurnitureRe
 router = APIRouter()
 
 
+@router.get("/furniture/{furn_id}")
 @router.post(
     "/furniture/", status_code=status.HTTP_201_CREATED, response_model=FurnitureResponse
 )
@@ -23,7 +24,7 @@ async def create_furniture(
     return FurnitureResponse.model_validate(created_furniture, from_attributes=True)
 
 
-@router.get("/furniture/{room_id}", response_model=list[FurnitureResponse])
+@router.get("/furniture/room/{room_id}", response_model=list[FurnitureResponse])
 async def get_furniture(room_id: int, db: AsyncSession = Depends(get_db)):
     furniture_results = await get_furniture_from_room(db, room_id)
     return [
