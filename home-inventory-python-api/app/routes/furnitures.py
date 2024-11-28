@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.furniture_repository import (
     delete_furniture,
     save_furniture,
+    get_furniture,
     get_furniture_from_room,
     update_furniture,
 )
@@ -13,7 +14,12 @@ from app.schemas.furniture import FurnitureCreate, FurnitureRequest, FurnitureRe
 router = APIRouter()
 
 
-@router.get("/furniture/{furn_id}")
+@router.get("/furniture/{furn_id}", response_model=FurnitureResponse)
+async def get_single_furniture(furnId: int, db: AsyncSession = Depends(get_db)):
+    furniture = await get_furniture(db, furnId)
+    return FurnitureResponse.model_validate(furniture, from_attributes=True)
+
+
 @router.post(
     "/furniture/", status_code=status.HTTP_201_CREATED, response_model=FurnitureResponse
 )

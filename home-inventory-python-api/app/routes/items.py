@@ -10,6 +10,7 @@ from app.repositories.item_repository import (
     get_item,
     update_item,
     delete_item,
+    get_route,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +21,12 @@ router = APIRouter()
 async def read_item(item_id: int, db: AsyncSession = Depends(get_db)):
     item = await get_item(db, item_id)
     return ItemResponse.model_validate(item, from_attributes=True)
+
+
+@router.get("/items/route/{item_id}")
+async def get_item_route(item_id: int, db: AsyncSession = Depends(get_db)):
+    item_route = await get_route(db, item_id)
+    return item_route
 
 
 @router.get(
