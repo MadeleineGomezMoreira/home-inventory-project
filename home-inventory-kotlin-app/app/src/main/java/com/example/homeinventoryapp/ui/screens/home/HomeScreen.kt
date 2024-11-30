@@ -33,6 +33,7 @@ import com.example.homeinventoryapp.ui.common.DefaultIcon
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
+import com.example.homeinventoryapp.ui.common.di.UserSession
 
 @Composable
 fun HomeScreen(
@@ -49,6 +50,7 @@ fun HomeScreen(
     LaunchedEffect(homeId) {
         viewModel.handleEvent(HomeContract.HomeEvent.GetHome(homeId))
         viewModel.handleEvent(HomeContract.HomeEvent.GetHomeUsers(homeId))
+        UserSession.homeId = homeId
     }
 
     if (uiState.userId != null) {
@@ -71,8 +73,7 @@ fun HomeScreen(
         onUserClicked = { user ->
             viewModel.handleEvent(HomeContract.HomeEvent.UserClicked(user as User))
         },
-
-        )
+    )
 }
 
 @Composable

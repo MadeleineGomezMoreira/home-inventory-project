@@ -21,6 +21,7 @@ interface ItemService {
 
     @GET(Constants.GET_ITEMS_BY_STRING_PATH)
     suspend fun getItemsByString(
+        //homeId
         @Path(Constants.ID_PARAM) id: Int,
         @Query("search_word") searchWord: String
     ): Response<List<ItemResponse>>
@@ -29,14 +30,16 @@ interface ItemService {
     suspend fun getItemById(@Path(Constants.ID_PARAM) id: Int): Response<ItemDetailResponse>
 
     @POST(Constants.REGISTER_ITEM_PATH)
-    suspend fun saveItem(@Body item: ItemRequestCreate): Response<ItemResponse>
+    suspend fun saveItem(@Body item: ItemRequestCreate): Response<ItemDetailResponse>
 
     @PUT(Constants.UPDATE_ITEM_PATH)
-    suspend fun updateItem(@Body item: ItemRequestUpdate): Response<ItemResponse>
+    suspend fun updateItem(@Body item: ItemRequestUpdate): Response<ItemDetailResponse>
 
     @DELETE(Constants.DELETE_ITEM_PATH)
     suspend fun deleteItem(@Path(Constants.ID_PARAM) id: Int): Response<Unit>
 
+    @GET(Constants.GET_ITEM_ROUTE_PATH)
+    suspend fun getItemRoute(@Path(Constants.ID_PARAM) id: Int): Response<String>
 
 
 }

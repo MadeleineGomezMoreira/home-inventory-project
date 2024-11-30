@@ -1,17 +1,23 @@
 package com.example.homeinventoryapp.data.model
 
+import com.example.homeinventoryapp.data.model.compartment.CompartmentRequestCreate
+import com.example.homeinventoryapp.data.model.compartment.CompartmentRequestUpdate
 import com.example.homeinventoryapp.data.model.compartment.CompartmentResponse
 import com.example.homeinventoryapp.data.model.furniture.FurnitureRequestCreate
 import com.example.homeinventoryapp.data.model.furniture.FurnitureRequestUpdate
 import com.example.homeinventoryapp.data.model.furniture.FurnitureResponse
 import com.example.homeinventoryapp.data.model.home.HomeRequestCreate
+import com.example.homeinventoryapp.data.model.home.HomeRequestUpdate
 import com.example.homeinventoryapp.data.model.home.HomeResponse
 import com.example.homeinventoryapp.data.model.home.MyHomesResponse
 import com.example.homeinventoryapp.data.model.homeusers.HomeUsersResponse
+import com.example.homeinventoryapp.data.model.invitation.InvitationRequestCreate
 import com.example.homeinventoryapp.data.model.invitation.InvitationResponse
 import com.example.homeinventoryapp.data.model.item.ItemDetailResponse
 import com.example.homeinventoryapp.data.model.item.ItemRequestCreate
+import com.example.homeinventoryapp.data.model.item.ItemRequestUpdate
 import com.example.homeinventoryapp.data.model.item.ItemResponse
+import com.example.homeinventoryapp.data.model.item.TagRequest
 import com.example.homeinventoryapp.data.model.item.TagResponse
 import com.example.homeinventoryapp.data.model.room.RoomRequestCreate
 import com.example.homeinventoryapp.data.model.room.RoomRequestUpdate
@@ -37,15 +43,14 @@ fun HomeResponse.toHome(): Home {
     )
 }
 
-fun Home.toHomeResponse(): HomeResponse {
-    return HomeResponse(
+fun Home.toHomeRequestUpdate(): HomeRequestUpdate {
+    return HomeRequestUpdate(
         id = id,
-        name = name,
-        owner = owner
+        name = name
     )
 }
 
-fun Home.toHomeRequest(): HomeRequestCreate {
+fun Home.toHomeRequestCreate(): HomeRequestCreate {
     return HomeRequestCreate(
         name = name,
         owner = owner
@@ -106,6 +111,14 @@ fun InvitationResponse.toInvitation(): Invitation {
     )
 }
 
+fun Invitation.toInvitationRequestCreate(): InvitationRequestCreate {
+    return InvitationRequestCreate(
+        inviterId = inviterId,
+        inviteeId = inviteeId,
+        homeId = homeId
+    )
+}
+
 fun FurnitureResponse.toFurniture(): Furniture {
     return Furniture(
         id = id,
@@ -136,6 +149,20 @@ fun CompartmentResponse.toCompartment(): Compartment {
     )
 }
 
+fun Compartment.toCompartmentRequestCreate(): CompartmentRequestCreate {
+    return CompartmentRequestCreate(
+        name = name,
+        furnId = furnId
+    )
+}
+
+fun Compartment.toCompartmentRequestUpdate(): CompartmentRequestUpdate {
+    return CompartmentRequestUpdate(
+        id = id,
+        name = name
+    )
+}
+
 fun ItemResponse.toItem(): Item {
     return Item(
         id = id,
@@ -144,7 +171,7 @@ fun ItemResponse.toItem(): Item {
     )
 }
 
-fun ItemDetailResponse.toItemDetail() : ItemDetail {
+fun ItemDetailResponse.toItemDetail(): ItemDetail {
     return ItemDetail(
         id = id,
         name = name,
@@ -166,6 +193,23 @@ fun ItemDetail.toItemRequestCreate(): ItemRequestCreate {
         name = name,
         compartmentId = compId,
         tags = tags.map { it.name }
+    )
+}
+
+fun ItemDetail.toItemRequestUpdate(): ItemRequestUpdate {
+    return ItemRequestUpdate(
+        id = id,
+        name = name,
+        compartmentId = compId,
+        tags = tags.map { it.toTagRequest() }
+    )
+}
+
+fun ItemTag.toTagRequest(): TagRequest {
+    return TagRequest(
+        id = id,
+        name = name,
+        homeId = homeId
     )
 }
 

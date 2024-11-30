@@ -20,6 +20,9 @@ interface CompartmentService {
     @GET(Constants.GET_COMPARTMENTS_BY_FURNITURE_PATH)
     suspend fun getCompartmentsByFurniture(@Path(Constants.ID_PARAM) id: Int): Response<List<CompartmentResponse>>
 
+    @GET(Constants.GET_COMPARTMENT_BY_ID_PATH)
+    suspend fun getCompartment(@Path(Constants.ID_PARAM) id: Int): Response<CompartmentResponse>
+
     @PUT(Constants.UPDATE_COMPARTMENT_PATH)
     suspend fun updateCompartment(@Body compartment: CompartmentRequestUpdate): Response<CompartmentResponse>
 

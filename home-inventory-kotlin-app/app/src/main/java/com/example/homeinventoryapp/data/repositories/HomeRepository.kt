@@ -19,7 +19,7 @@ class HomeRepository @Inject constructor(
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.getHome(id)
             emit(result)
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     fun getHomesByUser(id: Int): Flow<NetworkResult<MyHomes>> {
@@ -34,6 +34,14 @@ class HomeRepository @Inject constructor(
         return flow {
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.saveHome(home)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun updateHome(home: Home): Flow<NetworkResult<Home>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = homeRemoteDataSource.updateHome(home)
             emit(result)
         }.flowOn(Dispatchers.IO)
     }

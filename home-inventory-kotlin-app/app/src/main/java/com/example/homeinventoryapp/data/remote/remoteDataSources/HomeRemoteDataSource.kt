@@ -1,7 +1,8 @@
 package com.example.homeinventoryapp.data.remote.remoteDataSources
 
 import com.example.homeinventoryapp.data.model.toHome
-import com.example.homeinventoryapp.data.model.toHomeRequest
+import com.example.homeinventoryapp.data.model.toHomeRequestCreate
+import com.example.homeinventoryapp.data.model.toHomeRequestUpdate
 import com.example.homeinventoryapp.data.model.toMyHomes
 import com.example.homeinventoryapp.data.remote.BaseApiResponse
 import com.example.homeinventoryapp.data.remote.services.HomeService
@@ -79,7 +80,7 @@ class HomeRemoteDataSource @Inject constructor(
 
     suspend fun saveHome(home: Home): NetworkResult<Home> {
         return try {
-            val result = safeApiCall { homeService.saveHome(home.toHomeRequest()) }
+            val result = safeApiCall { homeService.saveHome(home.toHomeRequestCreate()) }
             when (result) {
                 is NetworkResult.Success -> {
                     result.data?.let { homeResponse ->
@@ -98,6 +99,31 @@ class HomeRemoteDataSource @Inject constructor(
             }
         } catch (e: Exception) {
             Timber.e(e, Constants.SAVING_HOME_ERROR)
+            return NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
+    suspend fun updateHome(home: Home): NetworkResult<Home> {
+        return try {
+            val result = safeApiCall { homeService.updateHome(home.toHomeRequestUpdate()) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.let { homeResponse ->
+                        NetworkResult.Success(homeResponse.toHome())
+                    } ?: NetworkResult.Error(Constants.UPDATING_HOME_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(result.message, Constants.UPDATING_HOME_ERROR)
+                    NetworkResult.Error(Constants.UPDATING_HOME_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.UPDATING_HOME_ERROR)
             return NetworkResult.Error(e.message ?: e.toString())
         }
     }
