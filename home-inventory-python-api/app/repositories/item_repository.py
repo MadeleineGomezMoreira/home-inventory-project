@@ -72,6 +72,10 @@ async def get_route(session: AsyncSession, item_id: int):
 
 # Retrieve item by name and tag
 async def get_items_by_string(session: AsyncSession, search_string: str, home_id: int):
+
+    search_pattern = f"%{search_string.lower()}%"
+    print(f"SEARCH-PATTERN: {search_pattern}")
+
     # Query items by name
     items_in_home_by_name = (
         select(Item)
@@ -79,7 +83,7 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .join(Compartment.furniture)
         .join(Furniture.room)
         .where(Room.home_id == home_id)
-        .where(func.lower(Item.item_name) == func.lower(search_string))
+        .where(func.lower(Item.item_name).ilike(search_pattern))
     )
 
     # Query items by tag
@@ -90,7 +94,7 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .join(Furniture.room)
         .join(Item.tags)
         .where(Room.home_id == home_id)
-        .where(func.lower(Tag.tag_name) == func.lower(search_string))
+        .where(func.lower(Tag.tag_name).ilike(search_pattern))
     )
 
     # Combine both queries using UNION
