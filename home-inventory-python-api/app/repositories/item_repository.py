@@ -18,11 +18,64 @@ async def get_items_from_compartment(session: AsyncSession, comp_id: int):
 async def get_item(session: AsyncSession, item_id: int):
     stmt = select(Item).where(Item.id == item_id)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    return result.scalar_one_or_none()
+
+
+# Retrieve item route
+async def get_route(session: AsyncSession, item_id: int):
+    stmt = (
+        select(Item)
+        .options(
+            joinedload(Item.compartment)
+            .joinedload(Compartment.furniture)
+            .joinedload(Furniture.room)
+            .joinedload(Room.home)
+        )
+        .where(Item.id == item_id)
+    )
+    result = await session.execute(stmt)
+    item = result.scalar_one_or_none()
+
+    if not item:
+        raise ItemNotFoundError(f"Item with id {item_id} not found.")
+
+    # Extract the names of the related entities
+    compartment_name = (
+        item.compartment.comp_name if item.compartment else "Unknown Compartment"
+    )
+    furniture_name = (
+        item.compartment.furniture.furn_name
+        if item.compartment and item.compartment.furniture
+        else "Unknown Furniture"
+    )
+    room_name = (
+        item.compartment.furniture.room.room_name
+        if item.compartment
+        and item.compartment.furniture
+        and item.compartment.furniture.room
+        else "Unknown Room"
+    )
+    home_name = (
+        item.compartment.furniture.room.home.home_name
+        if item.compartment
+        and item.compartment.furniture
+        and item.compartment.furniture.room
+        and item.compartment.furniture.room.home
+        else "Unknown Home"
+    )
+
+    # Combine the names into the desired route string
+    route = f"{home_name}/{room_name}/{furniture_name}/{compartment_name}"
+
+    return route
 
 
 # Retrieve item by name and tag
 async def get_items_by_string(session: AsyncSession, search_string: str, home_id: int):
+
+    search_pattern = f"%{search_string.lower()}%"
+    print(f"SEARCH-PATTERN: {search_pattern}")
+
     # Query items by name
     items_in_home_by_name = (
         select(Item)
@@ -30,7 +83,7 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .join(Compartment.furniture)
         .join(Furniture.room)
         .where(Room.home_id == home_id)
-        .where(func.lower(Item.item_name) == func.lower(search_string))
+        .where(func.lower(Item.item_name).ilike(search_pattern))
     )
 
     # Query items by tag
@@ -41,7 +94,7 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .join(Furniture.room)
         .join(Item.tags)
         .where(Room.home_id == home_id)
-        .where(func.lower(Tag.tag_name) == func.lower(search_string))
+        .where(func.lower(Tag.tag_name).ilike(search_pattern))
     )
 
     # Combine both queries using UNION

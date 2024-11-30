@@ -6,6 +6,7 @@ from app.repositories.compartment_repository import (
     get_compartments,
     delete_compartment,
     update_compartment,
+    get_compartment,
 )
 from app.schemas.compartment import (
     CompartmentCreate,
@@ -16,7 +17,9 @@ from app.schemas.compartment import (
 router = APIRouter()
 
 
-@router.get("/compartments/{furn_id}", response_model=list[CompartmentResponse])
+@router.get(
+    "/compartments/furniture/{furn_id}", response_model=list[CompartmentResponse]
+)
 async def get_compartments_in_furniture(
     furn_id: int, db: AsyncSession = Depends(get_db)
 ):
@@ -25,6 +28,12 @@ async def get_compartments_in_furniture(
         CompartmentResponse.model_validate(compartment, from_attributes=True)
         for compartment in compartments
     ]
+
+
+@router.get("/compartments/{comp_id}", response_model=CompartmentResponse)
+async def get_single_compartment(comp_id: int, db: AsyncSession = Depends(get_db)):
+    compartment = await get_compartment(db, comp_id)
+    return CompartmentResponse.model_validate(compartment, from_attributes=True)
 
 
 @router.post(
