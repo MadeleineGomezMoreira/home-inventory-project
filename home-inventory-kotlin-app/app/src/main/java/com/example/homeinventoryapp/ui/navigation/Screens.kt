@@ -18,10 +18,10 @@ val screensBottomBar = listOf(
 )
 
 val screensHomeBottomBar = listOf(
+    Screens(Constants.MY_HOMES_ROUTE, Constants.MY_HOMES_BAR_NAME, Icons.Default.HomeWork),
     Screens(Constants.ROOMS_ROUTE, Constants.ROOMS_BAR_NAME, Icons.Default.DoorFront),
     Screens(Constants.SEARCH_ITEMS_ROUTE, Constants.SEARCH_ITEMS_BAR_NAME, Icons.Default.Search),
 )
-
 
 data class Screens(
     val route: String,

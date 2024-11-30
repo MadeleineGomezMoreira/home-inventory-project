@@ -4,44 +4,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.ui.common.ClickableBigCard
+import com.example.homeinventoryapp.ui.common.CreateItemDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.ListBigCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
@@ -93,9 +81,9 @@ fun MyHomesScreen(
         }
     )
     if (uiState.showCreateDialogue) {
-        CreateHomeDialog(
+        CreateItemDialog(
             onDismiss = { viewModel.handleEvent(MyHomesContract.MyHomesEvent.ClearDialogue) },
-            onHomeCreate = { homeName ->
+            onItemCreate = { homeName ->
                 viewModel.handleEvent(MyHomesContract.MyHomesEvent.CreateHome(homeName, userId))
                 viewModel.handleEvent(MyHomesContract.MyHomesEvent.ClearDialogue)
             }
@@ -187,59 +175,3 @@ fun HomeListBigCard(
     }
 }
 
-@Composable
-fun CreateHomeDialog(
-    onDismiss: () -> Unit,
-    onHomeCreate: (String) -> Unit
-) {
-    var homeName by remember { mutableStateOf(TextFieldValue()) }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(16.dp),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 8.dp
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Create Home", style = MaterialTheme.typography.titleMedium)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextField(
-                    value = homeName,
-                    onValueChange = { homeName = it },
-                    placeholder = { Text(text = "Enter home name") }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        onHomeCreate(homeName.text)
-                        onDismiss()
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(text = "CREATE")
-                }
-            }
-        }
-    }
-}

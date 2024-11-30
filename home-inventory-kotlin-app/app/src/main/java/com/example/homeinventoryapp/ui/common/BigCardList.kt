@@ -59,7 +59,7 @@ fun <T> ClickableBigCard(
     modifier: Modifier = Modifier,
     onItemClicked: (T) -> Unit,
     iconContent: @Composable () -> Unit = { DefaultIcon() },
-    imageContent: @Composable (() -> Unit)? = null,
+    imageContent: @Composable () -> Unit = { DefaultImage() },
     textContent: @Composable (T) -> String
 ) {
     Card(
@@ -78,7 +78,7 @@ fun <T> ClickableBigCard(
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.secondary)
             ) {
-                (imageContent ?: { DefaultImage() })()
+                imageContent()
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -134,7 +134,7 @@ fun DefaultImage(
     contentDescription: String? = "Default background image"
 ) {
     Image(
-        painter = painterResource(id = R.drawable.default_image_home),
+        painter = painterResource(id = R.drawable.van_gogh_home),
         contentDescription = contentDescription,
         modifier = modifier.fillMaxSize(),
         contentScale = ContentScale.Crop

@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetUserHomesUseCase @Inject constructor(
     private val homeRepository: HomeRepository
 ) {
-    operator fun invoke(userId : Int) = homeRepository.getHomesByUser(userId)
+    operator fun invoke(userId: Int) = homeRepository.getHomesByUser(userId)
 }

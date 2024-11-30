@@ -17,7 +17,7 @@ class MyHomesContract {
         data class CreateHome(val homeName: String, val userId: Int?) : MyHomesEvent()
         data class GetHomes(val userId: Int) : MyHomesEvent()
         data object ErrorDisplayed : MyHomesEvent()
-        data class HomeClicked(val home : Home) : MyHomesEvent()
+        data class HomeClicked(val home: Home) : MyHomesEvent()
         data object ClearHome : MyHomesEvent()
         data object ClearDialogue : MyHomesEvent()
         data object ShowDialogue : MyHomesEvent()

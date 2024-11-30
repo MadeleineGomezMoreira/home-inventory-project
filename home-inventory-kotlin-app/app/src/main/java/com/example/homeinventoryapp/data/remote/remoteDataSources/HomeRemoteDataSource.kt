@@ -1,9 +1,10 @@
-package com.example.homeinventoryapp.data.remote
+package com.example.homeinventoryapp.data.remote.remoteDataSources
 
 import com.example.homeinventoryapp.data.model.toHome
-import com.example.homeinventoryapp.data.model.toHomeRequest
-import com.example.homeinventoryapp.data.model.toHomeResponse
+import com.example.homeinventoryapp.data.model.toHomeRequestCreate
+import com.example.homeinventoryapp.data.model.toHomeRequestUpdate
 import com.example.homeinventoryapp.data.model.toMyHomes
+import com.example.homeinventoryapp.data.remote.BaseApiResponse
 import com.example.homeinventoryapp.data.remote.services.HomeService
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.MyHomes
@@ -15,6 +16,35 @@ import javax.inject.Inject
 class HomeRemoteDataSource @Inject constructor(
     private val homeService: HomeService
 ) : BaseApiResponse() {
+
+    suspend fun getHome(id: Int): NetworkResult<Home> {
+        return try {
+            val result = safeApiCall { homeService.getHome(id) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.toHome()?.let { home ->
+                        NetworkResult.Success(home)
+                    } ?: NetworkResult.Error(Constants.NO_HOME_FOUND_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(
+                        result.message ?: Constants.EMPTY_MESSAGE,
+                        Constants.RETRIEVING_HOME_BY_ID_ERROR
+                    )
+                    NetworkResult.Error(result.message ?: Constants.NO_HOME_FOUND_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.RETRIEVING_HOME_BY_ID_ERROR)
+            NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
 
     suspend fun getHomesByUser(id: Int): NetworkResult<MyHomes> {
         return try {
@@ -50,7 +80,7 @@ class HomeRemoteDataSource @Inject constructor(
 
     suspend fun saveHome(home: Home): NetworkResult<Home> {
         return try {
-            val result = safeApiCall { homeService.saveHome(home.toHomeRequest()) }
+            val result = safeApiCall { homeService.saveHome(home.toHomeRequestCreate()) }
             when (result) {
                 is NetworkResult.Success -> {
                     result.data?.let { homeResponse ->
@@ -69,6 +99,31 @@ class HomeRemoteDataSource @Inject constructor(
             }
         } catch (e: Exception) {
             Timber.e(e, Constants.SAVING_HOME_ERROR)
+            return NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
+    suspend fun updateHome(home: Home): NetworkResult<Home> {
+        return try {
+            val result = safeApiCall { homeService.updateHome(home.toHomeRequestUpdate()) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.let { homeResponse ->
+                        NetworkResult.Success(homeResponse.toHome())
+                    } ?: NetworkResult.Error(Constants.UPDATING_HOME_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(result.message, Constants.UPDATING_HOME_ERROR)
+                    NetworkResult.Error(Constants.UPDATING_HOME_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.UPDATING_HOME_ERROR)
             return NetworkResult.Error(e.message ?: e.toString())
         }
     }

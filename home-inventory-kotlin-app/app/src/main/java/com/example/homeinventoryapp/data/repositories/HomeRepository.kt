@@ -1,6 +1,6 @@
 package com.example.homeinventoryapp.data.repositories
 
-import com.example.homeinventoryapp.data.remote.HomeRemoteDataSource
+import com.example.homeinventoryapp.data.remote.remoteDataSources.HomeRemoteDataSource
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.MyHomes
 import com.example.homeinventoryapp.utils.NetworkResult
@@ -14,7 +14,15 @@ class HomeRepository @Inject constructor(
     private val homeRemoteDataSource: HomeRemoteDataSource,
 ) {
 
-    fun getHomesByUser(id: Int) : Flow<NetworkResult<MyHomes>> {
+    fun getHome(id: Int): Flow<NetworkResult<Home>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = homeRemoteDataSource.getHome(id)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun getHomesByUser(id: Int): Flow<NetworkResult<MyHomes>> {
         return flow {
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.getHomesByUser(id)
@@ -22,7 +30,7 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun saveHome(home: Home) : Flow<NetworkResult<Home>> {
+    fun saveHome(home: Home): Flow<NetworkResult<Home>> {
         return flow {
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.saveHome(home)
@@ -30,7 +38,15 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun deleteHome(id: Int) : Flow<NetworkResult<Unit>> {
+    fun updateHome(home: Home): Flow<NetworkResult<Home>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = homeRemoteDataSource.updateHome(home)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun deleteHome(id: Int): Flow<NetworkResult<Unit>> {
         return flow {
             emit(NetworkResult.Loading())
             val result = homeRemoteDataSource.deleteHome(id)

@@ -12,10 +12,10 @@ import com.example.homeinventoryapp.ui.navigation.Screens
 
 @Composable
 fun BottomBar(
-    navController : NavController,
-    screens : List<Screens>,
-    ) {
-    NavigationBar(){
+    navController: NavController,
+    screens: List<Screens>,
+) {
+    NavigationBar() {
         val state = navController.currentBackStackEntryAsState()
         val currentDestination = state.value?.destination
         screens.forEach { screen ->
