@@ -15,6 +15,8 @@ object Constants {
     const val GET_USER_BY_USERNAME_PATH = "users/{username}"
     const val GET_USER_BY_ID_PATH = "users/{id}"
     const val GET_USERS_BY_HOME_ID_PATH = "users/home/{id}"
+    const val USERS_REGISTER_PATH = "users"
+    const val USERS_LOGIN_PATH = "login"
 
     //INVITATIONS
     const val SEND_INVITATION_PATH = "invitations/send"
@@ -52,6 +54,10 @@ object Constants {
     const val DELETE_ITEM_PATH = "items/{id}"
     const val GET_ITEM_ROUTE_PATH = "items/route/{id}"
 
+    //LOGIN-REGISTER
+    const val LOGIN_ROUTE = "login"
+    const val REGISTER_ROUTE = "register"
+
     //REQUEST PARAMETERS
     const val ID_PARAM = "id"
     const val USERNAME_PARAM = "username"
@@ -59,6 +65,8 @@ object Constants {
     //ERROR MESSAGES
     const val NO_INVITATIONS_FOUND_ERROR = "This user's invitations were not found in the database"
     const val NO_USER_FOUND_ERROR = "This user was not found in the database"
+    const val LOGIN_ERROR = "There was an error while logging in"
+    const val REGISTER_ERROR = "There was an error while registering"
     const val NO_HOME_FOUND_ERROR = "This home was not found in the database"
     const val NO_HOMES_FOUND_ERROR = "No homes found in the database"
     const val NO_ROOM_FOUND_ERROR = "This room was not found in the database"
@@ -150,7 +158,9 @@ object Constants {
     const val FURNITURE_ROUTE = "furniture_screen/{furnId}"
     const val COMPARTMENT_ROUTE = "compartment_screen/{compId}"
 
-    //SCREEN NAMES (BOTTOM BAR)
+    //SCREEN NAMES
+    const val LOGIN_BAR_NAME = "Login"
+    const val REGISTER_BAR_NAME = "Register"
     const val HOME_BAR_NAME = "Home"
     const val HOME_SCREEN_BAR_NAME = "Home Screen"
     const val MY_HOMES_BAR_NAME = "All of my homes"

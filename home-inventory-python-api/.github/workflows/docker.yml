@@ -33,4 +33,8 @@ jobs:
     # Push the Docker image to Docker Hub
     - name: Push Docker image
       run: |
-        docker push crazydatabaseuser/home-inventory-api:v1
+        docker push crazydatabaseuser/home-inventory-api:v2
+        build-args: |
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}

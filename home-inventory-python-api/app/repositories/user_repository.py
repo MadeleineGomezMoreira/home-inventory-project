@@ -226,9 +226,9 @@ async def send_email(session: AsyncSession, recipient: str):
         message = f"{CLICK_LINK_TO_ACTIVATE_ACCOUNT} {ACTIVATE_ACCOUNT_LINK}{EMAIL_URL}{recipient}{CODE_URL}{new_code}"
 
         # Set up the email server and send the email
-        sender_email = "alumnosdamquevedo@gmail.com" #EMAIL_ADDRESS
+        sender_email = EMAIL_ADDRESS
         receiver_email = recipient
-        password = "uyhqfbbfmszvuykt" #EMAIL_PASSWORD
+        password = EMAIL_PASSWORD
 
         # Create the email message
         msg = MIMEMultipart()
