@@ -28,7 +28,7 @@ class User(Base):
     activation_date: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=datetime.datetime.now
     )
-    activation_code: Mapped[str] = mapped_column(String(45), default="N/A")
+    activation_code: Mapped[str] = mapped_column(String(512), default="N/A")
 
     # Here we will define the relationship with Home (one user can own multiple homes)
     homes: Mapped[list["Home"]] = relationship(

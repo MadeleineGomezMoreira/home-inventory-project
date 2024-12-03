@@ -2,6 +2,8 @@ package com.example.homeinventoryapp.data.repositories
 
 import com.example.homeinventoryapp.data.remote.remoteDataSources.UserRemoteDataSource
 import com.example.homeinventoryapp.domain.model.HomeUsers
+import com.example.homeinventoryapp.domain.model.LoginDTO
+import com.example.homeinventoryapp.domain.model.RegisterDTO
 import com.example.homeinventoryapp.domain.model.User
 import com.example.homeinventoryapp.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +36,22 @@ class UserRepository @Inject constructor(
         return flow {
             emit(NetworkResult.Loading())
             val result = userRemoteDataSource.getUsersByHomeId(id)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun registerUser(user: RegisterDTO): Flow<NetworkResult<Unit>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = userRemoteDataSource.registerUser(user)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun loginUser(user: LoginDTO): Flow<NetworkResult<Int>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = userRemoteDataSource.loginUser(user)
             emit(result)
         }.flowOn(Dispatchers.IO)
     }

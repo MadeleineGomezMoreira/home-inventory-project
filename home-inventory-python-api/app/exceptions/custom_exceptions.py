@@ -3,10 +3,21 @@ class RoomNotFoundError(Exception):
 
     pass
 
+class UserNotActivatedError(Exception):
+        """Raised when trying to log into an unactivated account."""
+        pass
+
+class AccountAlreadyActivatedError(Exception):
+        """Raised when trying to activate an already activated account."""
+        pass
+    
+class MailMessagingException(Exception):
+        """Raised when there is an error while sending the activation email to the user."""
+        pass
+
 
 class CompartmentNotFoundError(Exception):
     """Raised when a compartment is not found in the database."""
-
     pass
 
 
@@ -27,6 +38,15 @@ class FurnitureNotFoundError(Exception):
 
     pass
 
+class ActivationCodeExpiredError(Exception):
+    """Raised when the account activation code is expired."""
+
+    pass
+
+class InvalidActivationCodeError(Exception):
+    """Raised when the account activation code is invalid."""
+
+    pass
 
 class UserNotFoundError(Exception):
     """Raised when a user is not found in the database."""

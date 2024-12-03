@@ -12,7 +12,9 @@ import com.example.homeinventoryapp.ui.screens.compartment.CompartmentScreen
 import com.example.homeinventoryapp.ui.screens.furniture.FurnitureScreen
 import com.example.homeinventoryapp.ui.screens.home.HomeScreen
 import com.example.homeinventoryapp.ui.screens.item.ItemScreen
+import com.example.homeinventoryapp.ui.screens.login.LoginScreen
 import com.example.homeinventoryapp.ui.screens.myhomes.MyHomesScreen
+import com.example.homeinventoryapp.ui.screens.register.RegisterScreen
 import com.example.homeinventoryapp.ui.screens.room.RoomScreen
 import com.example.homeinventoryapp.ui.screens.rooms.RoomsScreen
 import com.example.homeinventoryapp.ui.screens.search.SearchScreen
@@ -27,6 +29,43 @@ fun Navigation() {
         //(except if user was already logged in not too long ago)
         startDestination = Constants.MY_HOMES_ROUTE,
     ) {
+        composable(
+            route = Constants.REGISTER_ROUTE
+        ) {
+            RegisterScreen(
+                topBar = {
+                    TopBar(
+                        title = Constants.LOGIN_BAR_NAME
+                    )
+                },
+                bottomNavigationBar = {
+                    BottomBar(
+                        navController = navController,
+                        screens = screensLoginRegisterBottomBar,
+                    )
+                }
+            )
+        }
+        composable(
+            route = Constants.LOGIN_ROUTE
+        ) {
+            LoginScreen(
+                topBar = {
+                    TopBar(
+                        title = Constants.LOGIN_BAR_NAME
+                    )
+                },
+                bottomNavigationBar = {
+                    BottomBar(
+                        navController = navController,
+                        screens = screensLoginRegisterBottomBar,
+                    )
+                },
+                onLoginSuccess = {
+                    navController.navigate(Constants.MY_HOMES_ROUTE)
+                }
+            )
+        }
         composable(
             route = Constants.MY_HOMES_ROUTE
         ) {
