@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.user import UserResponse, UserCreate, UsersByRoleResponse
+from app.schemas.user import UserResponse, UserCreate, UsersByRoleResponse, UserRequestLogin
 from app.database.db_engine import get_db
 from app.repositories.user_repository import (
     get_all_users,
@@ -8,6 +8,9 @@ from app.repositories.user_repository import (
     get_user_by_id,
     get_user_by_username,
     save_user,
+    login_by_user_password,
+    send_email,
+    activate_user_account
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,3 +59,16 @@ async def read_all_users_by_home_by_role(
 ):
     users = await get_all_users_by_home_by_role(db, home_id)
     return users
+
+@router.get("/login/")
+async def login(login_data: UserRequestLogin, db: AsyncSession = Depends(get_db)):
+    user_id = await login_by_user_password(db, login_data)
+    return user_id
+
+@router.put("/resend-code/")
+async def resend_activation_code(email: str, db: AsyncSession = Depends(get_db)):
+    await send_email(db, email)
+
+@router.get("/activate")
+async def activate(email: str, code: str, db: AsyncSession = Depends(get_db)):
+    await activate_user_account(db, email, code)

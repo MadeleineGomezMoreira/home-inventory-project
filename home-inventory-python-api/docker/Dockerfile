@@ -18,6 +18,8 @@ EXPOSE 8085
 
 # Set environment variable for DATABASE_URL (GitHub secret will be passed at runtime)
 ENV DATABASE_URL=${DATABASE_URL}
+ENV EMAIL_ADDRESS=${EMAIL_ADDRESS}
+ENV EMAIL_PASSWORD=${EMAIL_PASSWORD}
 
 # Command to run the application directly
 CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8085", "--reload"]

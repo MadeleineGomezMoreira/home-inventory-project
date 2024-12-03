@@ -15,22 +15,23 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    username: str  # El nombre de usuario debe ser obligatorio en la creación
-    password: str  # La contraseña debe ser obligatoria en la creación
-    email: str  # La dirección de correo electrónico debe ser obligatorio en la creación
+    username: str 
+    password: str 
+    email: str
 
 
 class UserResponse(BaseModel):
     id: int
     username: str
     email: str
-    # Este campo será retornado cuando devuelvas un usuario existente
-    #    homes: Optional[List["HomeResponse"]] = (
-    #        []
-    #    )  # Usarás esto cuando devuelvas relaciones con otros objetos
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
 
+class UserRequestLogin(BaseModel):
+    username: str
+    password: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 class UsersByRoleResponse(BaseModel):
     OWNER: UserResponse
