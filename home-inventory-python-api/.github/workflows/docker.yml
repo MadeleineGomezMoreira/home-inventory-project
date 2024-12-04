@@ -30,7 +30,7 @@ jobs:
       run: |
         docker build -f ./docker/Dockerfile -t crazydatabaseuser/home-inventory-api:v1 .
 
-    # Push the Docker image to Docker Hub
+    # Push the Docker image to Docker Hub (using github secrets)
     - name: Push Docker image
       run: |
         docker push crazydatabaseuser/home-inventory-api:v1
