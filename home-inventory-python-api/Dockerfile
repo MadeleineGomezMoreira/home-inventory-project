@@ -16,7 +16,12 @@ COPY . .
 # Expose the application's port
 EXPOSE 8085
 
-# Set environment variable for DATABASE_URL (GitHub secret will be passed at runtime)
+# Declare build arguments (used during build)
+ARG DATABASE_URL
+ARG EMAIL_ADDRESS
+ARG EMAIL_PASSWORD
+
+# Set environment variables (available at runtime)
 ENV DATABASE_URL=${DATABASE_URL}
 ENV EMAIL_ADDRESS=${EMAIL_ADDRESS}
 ENV EMAIL_PASSWORD=${EMAIL_PASSWORD}
