@@ -18,7 +18,8 @@ from app.exceptions.custom_exceptions import(
     UserNotFoundError, 
     UserNotActivatedError, 
     AccountAlreadyActivatedError, 
-    MailMessagingException
+    MailMessagingException,
+    WrongUserCredentialsError
 ) 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

@@ -38,6 +38,11 @@ class FurnitureNotFoundError(Exception):
 
     pass
 
+class WrongUserCredentialsError(Exception):
+    """Raised when trying to log in using the wrong password."""
+
+    pass   
+
 class ActivationCodeExpiredError(Exception):
     """Raised when the account activation code is expired."""
 
