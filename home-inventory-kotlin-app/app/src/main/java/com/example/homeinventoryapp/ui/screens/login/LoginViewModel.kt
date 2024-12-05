@@ -51,7 +51,8 @@ class LoginViewModel @Inject constructor(
 
                         is NetworkResult.Error -> {
                             _state.value = _state.value.copy(
-                                error = result.message
+                                error = result.message,
+                                isLoading = false
                             )
                         }
 
