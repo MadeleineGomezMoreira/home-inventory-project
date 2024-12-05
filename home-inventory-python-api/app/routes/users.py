@@ -60,7 +60,7 @@ async def read_all_users_by_home_by_role(
     users = await get_all_users_by_home_by_role(db, home_id)
     return users
 
-@router.get("/login/")
+@router.post("/login/")
 async def login(login_data: UserRequestLogin, db: AsyncSession = Depends(get_db)):
     user_id = await login_by_user_password(db, login_data)
     return user_id

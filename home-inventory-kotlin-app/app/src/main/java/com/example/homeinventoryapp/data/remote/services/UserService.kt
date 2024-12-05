@@ -25,7 +25,7 @@ interface UserService {
     @POST(Constants.USERS_REGISTER_PATH)
     suspend fun registerUser(@Body user: RegisterDTO): Response<Unit>
 
-    @GET(Constants.USERS_LOGIN_PATH)
+    @POST(Constants.USERS_LOGIN_PATH)
     suspend fun loginUser(@Body user: LoginDTO): Response<Int>
 
 }
