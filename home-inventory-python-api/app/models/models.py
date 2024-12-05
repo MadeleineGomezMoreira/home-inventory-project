@@ -1,4 +1,3 @@
-from tkinter import CASCADE
 from sqlalchemy import (
     ForeignKey,
     String,
