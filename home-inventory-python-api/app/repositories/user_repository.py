@@ -33,8 +33,8 @@ import base64
 import datetime
 from datetime import timedelta
 
-EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS', 'default_value')
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', 'default_value')
+EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 # Constants (replace these with actual values)
 CLICK_LINK_TO_ACTIVATE_ACCOUNT = "Click the link to activate your account: "

@@ -4,7 +4,7 @@ from app.models.base import Base
 from sqlalchemy import text
 import os
 
-DATABASE_URL = os.getenv('DATABASE_URL', 'default_value')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 engine = create_async_engine(

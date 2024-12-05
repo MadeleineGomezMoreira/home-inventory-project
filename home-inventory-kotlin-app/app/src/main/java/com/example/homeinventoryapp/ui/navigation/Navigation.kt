@@ -25,9 +25,7 @@ fun Navigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        //HERE SHOULD GO LOGIN-SCREEN ROUTE
-        //(except if user was already logged in not too long ago)
-        startDestination = Constants.MY_HOMES_ROUTE,
+        startDestination = Constants.LOGIN_ROUTE,
     ) {
         composable(
             route = Constants.REGISTER_ROUTE
@@ -35,7 +33,7 @@ fun Navigation() {
             RegisterScreen(
                 topBar = {
                     TopBar(
-                        title = Constants.LOGIN_BAR_NAME
+                        title = Constants.REGISTER_BAR_NAME
                     )
                 },
                 bottomNavigationBar = {
@@ -43,7 +41,8 @@ fun Navigation() {
                         navController = navController,
                         screens = screensLoginRegisterBottomBar,
                     )
-                }
+                },
+                onRegisterSuccess = { navController.navigate(Constants.LOGIN_ROUTE) }
             )
         }
         composable(

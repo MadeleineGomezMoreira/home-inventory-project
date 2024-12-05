@@ -29,12 +29,12 @@ jobs:
     - name: Build Docker image
       run: |
         cd home-inventory-python-api
-        docker build -f ./Dockerfile -t crazydatabaseuser/home-inventory-api:v1 .
+        docker build -f ./Dockerfile -t crazydatabaseuser/home-inventory-api .
 
     # Push the Docker image to Docker Hub (using github secrets)
     - name: Push Docker image
       run: |
-        docker push crazydatabaseuser/home-inventory-api:v1
+        docker push crazydatabaseuser/home-inventory-api
         build-args: |
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}
