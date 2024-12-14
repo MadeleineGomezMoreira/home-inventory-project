@@ -35,7 +35,7 @@ EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', "uyhqfbbfmszvuykt")
 
 # Constants (replace these with actual values)
 CLICK_LINK_TO_ACTIVATE_ACCOUNT = "Click the link to activate your account: "
-ACTIVATE_ACCOUNT_LINK = "http://192.168.1.232:8085/activate"
+ACTIVATE_ACCOUNT_LINK = "https://informatica.iesquevedo.es/home-inventory/activate"
 EMAIL_URL = "?email="
 CODE_URL = "&code="
 ACTIVATE_YOUR_ACCOUNT_MAIL_SUBJECT = "Activate Your Account"
