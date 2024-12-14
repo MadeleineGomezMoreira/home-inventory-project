@@ -4,9 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,11 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.R
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.screens.login.CustomTextField
@@ -32,10 +33,10 @@ fun RegisterScreen(
     topBar: @Composable () -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
     onRegisterSuccess: () -> Unit,
-){
+) {
     val uiState by viewModel.state.collectAsState()
 
-    if(uiState.isRegisterSuccessful){
+    if (uiState.isRegisterSuccessful) {
         viewModel.handleEvent(RegisterContract.RegisterEvent.ClearRegisterSuccessful)
         onRegisterSuccess()
     }
@@ -81,7 +82,7 @@ fun RegisterContent(
     changedEmail: (String) -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
     topBar: @Composable () -> Unit = {},
-){
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -89,6 +90,22 @@ fun RegisterContent(
         bottomBar = bottomNavigationBar,
         topBar = topBar,
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.5f  // Apply some transparency to the background image
+                    }
+                    .blur(10.dp)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,20 +123,17 @@ fun RegisterContent(
             CustomTextField(
                 value = password,
                 onValueChange = { password -> changedPassword(password) },
-                label = stringResource(R.string.password)
+                label = stringResource(R.string.password),
+                isPassword = true
             )
             CustomTextField(
                 value = email,
                 onValueChange = { email -> changedEmail(email) },
                 label = stringResource(R.string.email)
             )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
             LoginRegisterButtonRow(
                 onClickAction = onRegister,
-                buttonText = stringResource(id = R.string.login_upper),
+                buttonText = stringResource(id = R.string.register_upper),
             )
         }
         ShowSnackbarMessage(message = error, snackbarHostState = snackbarHostState) {

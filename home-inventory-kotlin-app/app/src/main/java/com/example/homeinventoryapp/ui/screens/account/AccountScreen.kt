@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.InsertInvitation
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -23,8 +25,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Invitation
 import com.example.homeinventoryapp.domain.model.User
@@ -32,6 +39,7 @@ import com.example.homeinventoryapp.ui.common.ClickableSmallCard
 import com.example.homeinventoryapp.ui.common.CustomText
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.InvitationDialog
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
@@ -114,6 +122,31 @@ fun AccountContent(
         topBar = topBar,
         bottomBar = bottomNavigationBar
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with gradient overlay
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.7f
+                    }
+                    .blur(10.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.White.copy(alpha = 0.6f), Color.Transparent)
+                        )
+                    )
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -122,11 +155,11 @@ fun AccountContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = "USERNAME")
-            CustomText(text = user?.username ?: "")
+            CustomTextBold(text = "USERNAME", modifier = Modifier.align(Alignment.Start))
+            CustomText(text = user?.username ?: "", modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
-            CustomTextBold(text = "EMAIL")
-            CustomText(text = user?.email ?: "")
+            CustomTextBold(text = "EMAIL", modifier = Modifier.align(Alignment.Start))
+            CustomText(text = user?.email ?: "", modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
             if (invitations?.isNotEmpty() == true) {
                 Text(text = "Invitations", style = MaterialTheme.typography.titleLarge)
@@ -140,17 +173,27 @@ fun AccountContent(
             }
             if (invitations.isNullOrEmpty()) {
                 CustomTextBold(
-                    text = "You have no pending invitations.",
+                    text = "No invitations found",
+                    modifier = Modifier.align(Alignment.Start)
                 )
             }
+
             Button(
-                onClick = {
-                    onAccountDeleted()
-                },
-                modifier = Modifier.padding(top = 16.dp),
+                onClick = { onAccountDeleted() },
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .wrapContentWidth()
+                    .align(Alignment.CenterHorizontally),
                 shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(ButtonDefaults.buttonColors().disabledContainerColor),
                 content = {
-                    Text(text = "Delete Account")
+                    Text(
+                        text = "DELETE ACCOUNT",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        fontSize = 20.sp
+                    )
                 }
             )
         }

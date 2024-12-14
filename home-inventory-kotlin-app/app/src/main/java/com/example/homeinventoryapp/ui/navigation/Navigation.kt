@@ -68,7 +68,7 @@ fun Navigation() {
         }
         composable(
             route = Constants.ACCOUNT_ROUTE,
-        ){
+        ) {
             AccountScreen(
                 topBar = {
                     TopBar(
@@ -113,11 +113,6 @@ fun Navigation() {
             val retrievedHomeId = backStackEntry.arguments?.getString(Constants.HOME_ID)
             if (retrievedHomeId != null) {
                 HomeScreen(
-                    topBar = {
-                        TopBar(
-                            title = Constants.HOME_BAR_NAME
-                        )
-                    },
                     bottomNavigationBar = {
                         BottomBar(
                             navController = navController,
@@ -131,7 +126,7 @@ fun Navigation() {
                     onHomeWasDeleted = {
                         navController.navigate(Constants.MY_HOMES_ROUTE)
                     }
-                    )
+                )
             }
         }
         composable(
@@ -186,11 +181,6 @@ fun Navigation() {
             val retrievedItemId = backStackEntry.arguments?.getString(Constants.ITEM_ID)
             if (retrievedItemId != null) {
                 ItemScreen(
-                    topBar = {
-                        TopBar(
-                            title = Constants.ITEM_BAR_NAME
-                        )
-                    },
                     bottomNavigationBar = {
                         BottomBar(
                             navController = navController,
@@ -216,7 +206,7 @@ fun Navigation() {
                     },
                     topBar = {
                         TopBar(
-                            title = Constants.FURNITURE_BAR_NAME
+                            title = Constants.COMPARTMENT_BAR_NAME
                         )
                     },
                     onItemClicked = { itemId ->

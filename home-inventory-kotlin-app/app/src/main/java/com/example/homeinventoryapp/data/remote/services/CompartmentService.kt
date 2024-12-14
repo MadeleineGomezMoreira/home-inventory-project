@@ -30,5 +30,4 @@ interface CompartmentService {
     suspend fun deleteCompartment(@Path(Constants.ID_PARAM) id: Int): Response<Unit>
 
 
-
 }

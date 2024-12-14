@@ -58,6 +58,7 @@ class ItemViewModel @Inject constructor(
             is ItemContract.ItemEvent.MoveItem -> moveItem(event.itemId, event.compId)
             ItemContract.ItemEvent.ClearDialogData -> _state.value =
                 _state.value.copy(compartments = emptyList(), furniture = emptyList())
+
             ItemContract.ItemEvent.ShowMoveDialogue -> _state.value =
                 _state.value.copy(showMoveDialogue = true)
         }
@@ -95,19 +96,21 @@ class ItemViewModel @Inject constructor(
     private fun getFurnitures(roomId: Int) {
         viewModelScope.launch {
             getFurnituresByRoom.invoke(roomId)
-                .collect{ result ->
-                    when (result){
+                .collect { result ->
+                    when (result) {
                         is NetworkResult.Success -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 furniture = result.data
                             )
                         }
+
                         is NetworkResult.Loading -> {
                             _state.value = _state.value.copy(
                                 isLoading = true
                             )
                         }
+
                         is NetworkResult.Error -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,

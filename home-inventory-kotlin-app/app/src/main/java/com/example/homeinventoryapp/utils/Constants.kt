@@ -143,7 +143,8 @@ object Constants {
     const val DELETING_FURNITURE_ERROR = "There was an error while deleting the piece of furniture"
     const val DELETING_COMPARTMENT_ERROR = "There was an error while deleting the compartment"
     const val DELETING_ITEM_ERROR = "There was an error while deleting the item"
-    const val RETRIEVING_HOME_OWNERSHIP_ERROR = "There was an error while retrieving the home's ownership status"
+    const val RETRIEVING_HOME_OWNERSHIP_ERROR =
+        "There was an error while retrieving the home's ownership status"
 
     //UI ERROR MESSAGES
     const val PERMISSION_DENIED_ERROR =
@@ -169,18 +170,18 @@ object Constants {
     const val COMPARTMENT_ROUTE = "compartment_screen/{compId}"
 
     //SCREEN NAMES
-    const val LOGIN_BAR_NAME = "Login"
-    const val REGISTER_BAR_NAME = "Register"
-    const val HOME_BAR_NAME = "Home"
-    const val HOME_SCREEN_BAR_NAME = "Home Screen"
-    const val MY_HOMES_BAR_NAME = "All of my homes"
-    const val ACCOUNT_BAR_NAME = "Personal Profile"
-    const val ROOMS_BAR_NAME = "Rooms"
-    const val ROOM_BAR_NAME = "Room"
-    const val FURNITURE_BAR_NAME = "Furniture"
-    const val COMPARTMENT_BAR_NAME = "Compartment"
-    const val ITEM_BAR_NAME = "Item"
-    const val SEARCH_ITEMS_BAR_NAME = "Search Items"
+    const val LOGIN_BAR_NAME = "LOGIN"
+    const val REGISTER_BAR_NAME = "REGISTER"
+    const val HOME_BAR_NAME = "HOME"
+    const val MY_HOMES_BAR_NAME = "MY HOMES"
+    const val ACCOUNT_BAR_NAME = "PROFILE"
+    const val ROOMS_BAR_NAME = "ROOMS"
+    const val ROOM_BAR_NAME = "ROOM"
+    const val FURNITURE_BAR_NAME = "FURNITURE"
+    const val COMPARTMENT_BAR_NAME = "COMPARTMENT"
+    const val LOG_OUT_BAR_NAME = "LOG OUT"
+    const val ITEM_BAR_NAME = "ITEM"
+    const val SEARCH_ITEMS_BAR_NAME = "SEARCH ITEMS"
 
     //NAVIGATION VARIABLES
     const val HOME_ID = "homeId"

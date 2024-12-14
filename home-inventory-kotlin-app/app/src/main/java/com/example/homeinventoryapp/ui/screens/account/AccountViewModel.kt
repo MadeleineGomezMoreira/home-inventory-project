@@ -50,6 +50,7 @@ class AccountViewModel @Inject constructor(
 
             AccountContract.AccountEvent.ClearInvitationDialogue -> _state.value =
                 _state.value.copy(showInvitationDialogue = false)
+
             AccountContract.AccountEvent.ShowInvitationDialogue -> _state.value =
                 _state.value.copy(showInvitationDialogue = true)
         }

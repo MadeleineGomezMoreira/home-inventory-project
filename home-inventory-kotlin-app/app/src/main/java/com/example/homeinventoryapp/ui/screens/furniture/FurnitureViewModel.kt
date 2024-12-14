@@ -66,26 +66,26 @@ class FurnitureViewModel @Inject constructor(
     private fun editFurniture(furnitureName: String, furnId: Int, roomId: Int) {
         viewModelScope.launch {
             updateFurniture.invoke(furnId, furnitureName, roomId).collect { result ->
-                    when (result) {
-                        is NetworkResult.Success -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false, error = null, furniture = result.data
-                            )
-                        }
+                when (result) {
+                    is NetworkResult.Success -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false, error = null, furniture = result.data
+                        )
+                    }
 
-                        is NetworkResult.Loading -> {
-                            _state.value = _state.value.copy(
-                                isLoading = true
-                            )
-                        }
+                    is NetworkResult.Loading -> {
+                        _state.value = _state.value.copy(
+                            isLoading = true
+                        )
+                    }
 
-                        is NetworkResult.Error -> {
-                            _state.value = _state.value.copy(
-                                isLoading = false, error = result.message
-                            )
-                        }
+                    is NetworkResult.Error -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false, error = result.message
+                        )
                     }
                 }
+            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.example.homeinventoryapp.ui.screens.register
 
-import com.example.homeinventoryapp.ui.screens.login.LoginContract.LoginEvent
-
 class RegisterContract {
 
     data class RegisterState(

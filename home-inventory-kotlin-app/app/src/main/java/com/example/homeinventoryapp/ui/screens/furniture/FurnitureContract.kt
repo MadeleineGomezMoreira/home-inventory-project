@@ -18,7 +18,9 @@ class FurnitureContract {
         data class GetFurniture(val furnitureId: Int) : FurnitureEvent()
         data class GetFurnitureCompartments(val furnitureId: Int) : FurnitureEvent()
         data class CreateCompartment(val name: String, val furnId: Int) : FurnitureEvent()
-        data class EditFurniture(val furnitureName: String, val furnId: Int, val roomId: Int) : FurnitureEvent()
+        data class EditFurniture(val furnitureName: String, val furnId: Int, val roomId: Int) :
+            FurnitureEvent()
+
         data class CompartmentClicked(val compartment: Compartment) : FurnitureEvent()
         data object ErrorDisplayed : FurnitureEvent()
         data object ClearCompartment : FurnitureEvent()

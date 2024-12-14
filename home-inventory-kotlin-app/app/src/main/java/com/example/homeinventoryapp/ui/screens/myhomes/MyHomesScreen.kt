@@ -24,13 +24,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.ui.common.ClickableBigCard
 import com.example.homeinventoryapp.ui.common.CreateItemDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.ListBigCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
@@ -112,16 +117,37 @@ fun MyHomesContent(
         bottomBar = bottomNavigationBar,
         floatingActionButton = floatingActionButton,
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.6f  // Apply some transparency to the background image
+                    }
+                    .blur(15.dp)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 30.dp),
+                .padding(horizontal = 30.dp, vertical = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
             if (ownerHomes?.isNotEmpty() == true) {
-                Text(text = "Owned Homes", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Owned Homes",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 HomeListBigCard(
                     homes = ownerHomes,

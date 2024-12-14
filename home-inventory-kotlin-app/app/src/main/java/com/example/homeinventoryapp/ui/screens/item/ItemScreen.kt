@@ -22,11 +22,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,7 +53,6 @@ import timber.log.Timber
 fun ItemScreen(
     viewModel: ItemViewModel = hiltViewModel(),
     bottomNavigationBar: @Composable () -> Unit = {},
-    topBar: @Composable () -> Unit = {},
     itemId: Int,
 ) {
     val uiState by viewModel.state.collectAsState()
@@ -104,7 +108,6 @@ fun ItemScreen(
         itemRoute = uiState.itemRoute,
         error = uiState.error,
         isLoading = uiState.isLoading,
-        topBar = topBar,
         bottomNavigationBar = bottomNavigationBar,
         errorShown = {
             viewModel.handleEvent(ItemContract.ItemEvent.ErrorDisplayed)
@@ -130,7 +133,6 @@ fun ItemContent(
     itemRoute: String?,
     error: String?,
     isLoading: Boolean = false,
-    topBar: @Composable () -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
     errorShown: () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
@@ -142,10 +144,24 @@ fun ItemContent(
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            topBar = topBar,
             bottomBar = bottomNavigationBar,
             floatingActionButton = floatingActionButton,
         ) { innerPadding ->
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                // Background image with blur effect
+                DefaultImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            this.alpha = 0.6f  // Apply some transparency to the background image
+                        }
+                        .blur(15.dp)
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -175,21 +191,7 @@ fun ItemContent(
                             .padding(bottom = 30.dp),  // Ensure it takes full width
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Text(
-                            text = item?.name?.uppercase() ?: "Name not found",
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.Bold,  // Example of making text bold
-                                fontSize = 30.sp // Set the default font size, will scale down if needed
-                            ),
-                            color = Color.White,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(16.dp), // This ensures the text wraps to fit within the available height
-                            maxLines = 1,  // Allow the text to be on a single line
-                            textAlign = TextAlign.Start
-                        )
+                        ResizableText(item?.name?.uppercase() ?: "Name not found")
                     }
                 }
 
@@ -243,6 +245,50 @@ fun ItemContent(
 }
 
 @Composable
+fun ResizableText(itemName: String?) {
+    var textWidth by remember { mutableStateOf(0) }
+    val defaultFontSize = 30.sp
+    val density = LocalDensity.current.density
+
+    // This value could be fine-tuned based on desired scaling behavior
+    val minFontSize = 16.sp
+    val maxFontSize = 30.sp
+
+    // Dynamically adjust the font size based on available width
+    val fontSize = remember(textWidth) {
+        if (textWidth > 0) {
+            // Scale the font size based on the width of the available space
+            val scaleFactor = textWidth / 300f  // Adjust this scale factor as necessary
+            val adjustedSize =
+                (defaultFontSize.value * scaleFactor).coerceIn(minFontSize.value, maxFontSize.value)
+            adjustedSize.sp
+        } else {
+            defaultFontSize
+        }
+    }
+
+    Text(
+        text = itemName?.uppercase() ?: "Name not found",
+        style = androidx.compose.ui.text.TextStyle(
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold
+        ),
+        color = Color.White,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(16.dp)
+            .onSizeChanged { size ->
+                // Measure the width of the Text composable and update the state
+                textWidth = size.width
+            },
+        maxLines = 1,
+        textAlign = TextAlign.Start
+    )
+}
+
+@Composable
 fun TagChip(tag: String) {
     val pastelColor = remember { generateRandomPastelColor() }
 
@@ -250,9 +296,10 @@ fun TagChip(tag: String) {
         onClick = { /* Handle click if needed */ },
         label = {
             Text(
-                text = tag,
+                text = tag.uppercase(),
+                color = Color.White,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

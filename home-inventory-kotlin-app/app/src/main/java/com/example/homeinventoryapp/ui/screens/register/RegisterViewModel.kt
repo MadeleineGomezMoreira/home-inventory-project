@@ -49,13 +49,15 @@ class RegisterViewModel @Inject constructor(
                     when (result) {
                         is NetworkResult.Success -> {
                             _state.value = _state.value.copy(
-                                isRegisterSuccessful = true
+                                isRegisterSuccessful = true,
+                                isLoading = false
                             )
                         }
 
                         is NetworkResult.Error -> {
                             _state.value = _state.value.copy(
-                                error = result.message
+                                error = result.message,
+                                isLoading = false
                             )
                         }
 

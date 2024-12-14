@@ -24,7 +24,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Compartment
@@ -32,6 +34,7 @@ import com.example.homeinventoryapp.domain.model.Item
 import com.example.homeinventoryapp.ui.common.ClickableSquareCard
 import com.example.homeinventoryapp.ui.common.CreateItemAndTagsDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.ListSquareCards
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
@@ -120,6 +123,20 @@ fun CompartmentContent(
         bottomBar = bottomNavigationBar,
         floatingActionButton = floatingActionButton
     ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.6f  // Apply some transparency to the background image
+                    }
+                    .blur(15.dp)
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -148,7 +165,7 @@ fun CompartmentContent(
             }
             if (items.isNullOrEmpty()) {
                 CustomTextBold(
-                    text = "There are no items in this compartment yet.",
+                    text = "No items found.",
                 )
             }
         }

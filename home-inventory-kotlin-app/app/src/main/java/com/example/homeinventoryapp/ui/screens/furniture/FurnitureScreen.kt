@@ -22,7 +22,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Compartment
@@ -31,6 +33,7 @@ import com.example.homeinventoryapp.ui.common.ClickableSmallCard
 import com.example.homeinventoryapp.ui.common.CreateItemDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.EditItemDialog
 import com.example.homeinventoryapp.ui.common.FloatingActionMenuAddEdit
 import com.example.homeinventoryapp.ui.common.ListSmallCard
@@ -135,6 +138,20 @@ fun FurnitureContent(
         bottomBar = bottomNavigationBar,
         floatingActionButton = floatingActionButton,
     ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.6f  // Apply some transparency to the background image
+                    }
+                    .blur(15.dp)
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,7 +170,7 @@ fun FurnitureContent(
                     onCompartmentClicked = onCompartmentClicked
                 )
             } else {
-                Text(text = "No compartments added yet")
+                Text(text = "No items found")
             }
             ShowSnackbarMessage(message = error, snackbarHostState = snackbarHostState) {
                 errorShown()

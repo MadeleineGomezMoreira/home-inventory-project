@@ -9,9 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -21,14 +26,24 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.R
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
@@ -91,6 +106,22 @@ fun LoginContent(
         bottomBar = bottomNavigationBar,
         topBar = topBar,
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.5f  // Apply some transparency to the background image
+                    }
+                    .blur(10.dp)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,17 +133,14 @@ fun LoginContent(
             CustomTextField(
                 value = username,
                 onValueChange = { username -> changedUsername(username) },
-                label = stringResource(R.string.username)
+                label = stringResource(R.string.username),
             )
 
             CustomTextField(
                 value = password,
                 onValueChange = { password -> changedPassword(password) },
-                label = stringResource(R.string.password)
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
+                label = stringResource(R.string.password),
+                isPassword = true
             )
             LoginRegisterButtonRow(
                 onClickAction = onLogin,
@@ -143,37 +171,67 @@ fun LoginRegisterButtonRow(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .wrapContentWidth()
             .padding(16.dp),
     ) {
         Spacer(modifier = Modifier.width(3.dp))
         Button(
             onClick = { onClickAction() },
             modifier = Modifier
-                .weight(1f),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-            )
-        ) {
-            Text(text = buttonText)
-        }
+                .weight(1f)
+                .wrapContentWidth(),
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(ButtonDefaults.buttonColors().disabledContainerColor),
+            content = {
+                Text(
+                    text = buttonText,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    fontSize = 20.sp
+                )
+            }
+        )
         Spacer(modifier = Modifier.width(3.dp))
     }
 }
 
+
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    modifier: Modifier = Modifier
+    fontSize: Int = 25,
+    labelFontSize: Int = 18,
+    isPassword: Boolean = false
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = label) },
+        label = { Text(text = label, fontSize = labelFontSize.sp) },
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(vertical = 10.dp),
+        visualTransformation = if (isPassword && !passwordVisible) {
+            PasswordVisualTransformation() // Mask the password text
+        } else {
+            VisualTransformation.None // Show the password text if visible
+        },
+        trailingIcon = {
+            if (isPassword) {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            }
+        },
+        // Apply the font size using TextStyle
+        textStyle = TextStyle(fontSize = fontSize.sp)
     )
 }

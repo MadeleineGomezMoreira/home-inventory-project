@@ -133,7 +133,10 @@ fun FloatingActionMenuEditDeleteAdd(
                     expanded = false
                     onAddHomeMember()
                 }) {
-                    Icon(imageVector = Icons.Default.PersonAddAlt, contentDescription = "Add member")
+                    Icon(
+                        imageVector = Icons.Default.PersonAddAlt,
+                        contentDescription = "Add member"
+                    )
                 }
 
                 FloatingActionButton(onClick = {

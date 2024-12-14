@@ -12,7 +12,7 @@ class ItemContract {
         val rooms: List<Room>? = emptyList(),
         val furniture: List<Furniture>? = emptyList(),
         val compartments: List<Compartment>? = emptyList(),
-        val itemRoute : String? = null,
+        val itemRoute: String? = null,
         val isLoading: Boolean = false,
         val error: String? = null,
         val showEditDialogue: Boolean = false,

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -64,7 +63,7 @@ fun <T> ClickableSmallCard(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(color = MaterialTheme.colorScheme.tertiary)
+                .background(color = Color(0xFF274227).copy(alpha = 0.6f))
         ) {
             Row(
                 modifier = Modifier.padding(8.dp),

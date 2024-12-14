@@ -14,17 +14,17 @@ import retrofit2.http.Path
 interface InvitationService {
 
     @GET(Constants.GET_INVITATIONS_BY_USER)
-    suspend fun getInvitationsByUser(@Path(Constants.ID_PARAM) id: Int) : Response<List<InvitationResponse>>
+    suspend fun getInvitationsByUser(@Path(Constants.ID_PARAM) id: Int): Response<List<InvitationResponse>>
 
     @POST(Constants.SEND_INVITATION_PATH)
-    suspend fun sendInvitation(@Body invitation: InvitationRequestCreate) : Response<Unit>
+    suspend fun sendInvitation(@Body invitation: InvitationRequestCreate): Response<Unit>
 
     @POST(Constants.ACCEPT_INVITATION_PATH)
-    suspend fun acceptInvitation(@Path(Constants.ID_PARAM) id: Int) : Response<Unit>
+    suspend fun acceptInvitation(@Path(Constants.ID_PARAM) id: Int): Response<Unit>
 
     @DELETE(Constants.DECLINE_INVITATION_PATH)
-    suspend fun declineInvitation(@Path(Constants.ID_PARAM) id: Int) : Response<Unit>
+    suspend fun declineInvitation(@Path(Constants.ID_PARAM) id: Int): Response<Unit>
 
     @GET(Constants.GET_INVITATION_INFO_PATH)
-    suspend fun getInvitationInfo(@Path(Constants.ID_PARAM) id: Int) : Response<InvitationInfoResponse>
+    suspend fun getInvitationInfo(@Path(Constants.ID_PARAM) id: Int): Response<InvitationInfoResponse>
 }

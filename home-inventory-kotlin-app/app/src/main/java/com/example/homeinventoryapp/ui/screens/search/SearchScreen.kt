@@ -1,7 +1,6 @@
 package com.example.homeinventoryapp.ui.screens.search
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +20,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,8 +38,8 @@ import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Item
 import com.example.homeinventoryapp.ui.common.ClickableSquareCard
 import com.example.homeinventoryapp.ui.common.CustomTextBold
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.ListSquareCards
-import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
 
@@ -54,14 +54,14 @@ fun SearchScreen(
     val homeId = UserSession.homeId
 
     if (uiState.searchWord.isNotEmpty()) {
-            homeId?.let {
-                viewModel.handleEvent(
-                    SearchContract.SearchEvent.GetSearch(
-                        homeId,
-                        uiState.searchWord
-                    )
+        homeId?.let {
+            viewModel.handleEvent(
+                SearchContract.SearchEvent.GetSearch(
+                    homeId,
+                    uiState.searchWord
                 )
-            }
+            )
+        }
     }
 
     if (uiState.itemId != null) {
@@ -106,6 +106,22 @@ fun SearchContent(
         topBar = topBar,
         bottomBar = bottomNavigationBar,
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.6f  // Apply some transparency to the background image
+                    }
+                    .blur(15.dp)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -144,7 +160,7 @@ fun SearchContent(
                 }
             } else {
                 CustomTextBold(
-                    text = "No matching items found.",
+                    text = "No items found.",
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
             }

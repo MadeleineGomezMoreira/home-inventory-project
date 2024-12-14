@@ -2,13 +2,11 @@ package com.example.homeinventoryapp.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AssignmentInd
 import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.Handshake
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HomeWork
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.homeinventoryapp.utils.Constants
@@ -16,6 +14,7 @@ import com.example.homeinventoryapp.utils.Constants
 val screensBottomBar = listOf(
     Screens(Constants.MY_HOMES_ROUTE, Constants.MY_HOMES_BAR_NAME, Icons.Default.HomeWork),
     Screens(Constants.ACCOUNT_ROUTE, Constants.ACCOUNT_BAR_NAME, Icons.Default.AccountCircle),
+    Screens(Constants.LOGIN_ROUTE, Constants.LOG_OUT_BAR_NAME, Icons.AutoMirrored.Filled.Logout),
 )
 
 val screensHomeBottomBar = listOf(

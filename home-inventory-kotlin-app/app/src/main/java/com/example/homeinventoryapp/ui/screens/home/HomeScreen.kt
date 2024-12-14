@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -22,28 +23,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.User
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
-import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.EditItemDialog
 import com.example.homeinventoryapp.ui.common.FloatingActionMenuEditDeleteAdd
-import com.example.homeinventoryapp.ui.common.InvitationDialog
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.SendInvitationDialog
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.ui.screens.item.ResizableText
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     bottomNavigationBar: @Composable () -> Unit = {},
-    topBar: @Composable () -> Unit = {},
     onUserClicked: (Any?) -> Unit,
     onHomeWasDeleted: () -> Unit,
     homeId: Int,
@@ -74,7 +78,6 @@ fun HomeScreen(
         home = uiState.home,
         error = uiState.error,
         isLoading = uiState.isLoading,
-        topBar = topBar,
         bottomNavigationBar = bottomNavigationBar,
         errorShown = {
             viewModel.handleEvent(HomeContract.HomeEvent.ErrorDisplayed)
@@ -99,13 +102,19 @@ fun HomeScreen(
         }
     )
 
-    if(uiState.showInvitationDialogue){
+    if (uiState.showInvitationDialogue) {
         SendInvitationDialog(
             onDismiss = {
                 viewModel.handleEvent(HomeContract.HomeEvent.ClearInvitationDialogue)
             },
             onSendInvitation = { username ->
-                viewModel.handleEvent(HomeContract.HomeEvent.SendInvitation(userId,username, homeId))
+                viewModel.handleEvent(
+                    HomeContract.HomeEvent.SendInvitation(
+                        userId,
+                        username,
+                        homeId
+                    )
+                )
             }
         )
     }
@@ -142,6 +151,51 @@ fun HomeContent(
         bottomBar = bottomNavigationBar,
         floatingActionButton = floatingActionButton,
     ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Background image with blur effect
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = 0.4f  // Apply some transparency to the background image
+                    }
+                    .blur(15.dp)
+            )
+        }
+
+        // Add the blurred background image with the item name overlaid
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+        ) {
+            // DefaultImage composable for the background
+            DefaultImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .blur(10.dp)
+                    .background(Color.Black.copy(alpha = 0.5f))
+            )
+
+            // Overlay the item name with better alignment
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                ResizableText(home?.name?.uppercase() ?: "Home name not found")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -150,10 +204,15 @@ fun HomeContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = home?.name ?: "")
-            Spacer(modifier = Modifier.height(8.dp))
+//            CustomTextBold(text = home?.name ?: "")
+//            Spacer(modifier = Modifier.height(8.dp))
             if (owner != null) {
-                Text(text = "House Owner", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "House Owner",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
                 ClickableSmallCard(
                     item = owner,
                     onItemClicked = onUserClicked,
@@ -170,7 +229,12 @@ fun HomeContent(
             }
             if (members?.isNotEmpty() == true) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "House Members", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "House Members",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 UsersListSmallCard(
                     users = members,

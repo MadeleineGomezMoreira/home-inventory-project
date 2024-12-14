@@ -59,7 +59,11 @@ class RoomViewModel @Inject constructor(
             RoomContract.RoomEvent.ShowEditDialogue -> _state.value =
                 _state.value.copy(showEditDialogue = true)
 
-            is RoomContract.RoomEvent.EditRoom -> editRoom(event.roomName, event.roomId, event.homeId)
+            is RoomContract.RoomEvent.EditRoom -> editRoom(
+                event.roomName,
+                event.roomId,
+                event.homeId
+            )
         }
     }
 
