@@ -145,7 +145,7 @@ fun MyHomesContent(
         ) {
             Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(if (memberHomes?.isNotEmpty() == true) 1f else 2f)
                     .fillMaxSize()
             ) {
                 if (ownerHomes?.isNotEmpty() == true) {

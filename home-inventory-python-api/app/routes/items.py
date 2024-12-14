@@ -162,7 +162,7 @@ async def search_items_in_home(
     items = await get_items_by_string(db, search_word, home_id)
     return [
         ItemResponseNoTags.model_validate(item, from_attributes=True) for item in items
-    ]
+    ] if items else []
 
 
 @router.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)

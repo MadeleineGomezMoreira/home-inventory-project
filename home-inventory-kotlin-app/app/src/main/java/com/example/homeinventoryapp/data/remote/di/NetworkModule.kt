@@ -1,9 +1,5 @@
 package com.example.homeinventoryapp.data.remote.di
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.homeinventoryapp.BuildConfig
 import com.example.homeinventoryapp.data.model.furniture.FurnitureService
 import com.example.homeinventoryapp.data.remote.services.CompartmentService
@@ -26,7 +22,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "data_store")
 
     @Singleton
     @Provides
