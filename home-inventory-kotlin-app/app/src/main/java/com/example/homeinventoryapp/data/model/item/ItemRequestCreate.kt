@@ -2,7 +2,7 @@ package com.example.homeinventoryapp.data.model.item
 
 import com.google.gson.annotations.SerializedName
 
-data class ItemRequestCreate(
+data class ItemRequestCreate (
     @SerializedName("itemName")
     val name: String,
     @SerializedName("compId")

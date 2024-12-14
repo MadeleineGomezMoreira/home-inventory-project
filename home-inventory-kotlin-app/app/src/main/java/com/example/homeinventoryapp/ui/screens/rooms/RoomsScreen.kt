@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +45,7 @@ import com.example.homeinventoryapp.ui.common.ListBigCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun RoomsScreen(
@@ -83,7 +85,7 @@ fun RoomsScreen(
                     viewModel.handleEvent(RoomsContract.RoomsEvent.ShowDialogue)
                 }
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Room")
+                Icon(imageVector = Icons.Filled.Add, contentDescription = Constants.ADD_ROOM_DESCRIPTION)
             }
         }
     )
@@ -102,7 +104,7 @@ fun RoomsScreen(
                 }
                 viewModel.handleEvent(RoomsContract.RoomsEvent.ClearDialogue)
             },
-            itemToCreateWord = "Room"
+            itemToCreateWord = Constants.ROOM
         )
     }
 
@@ -132,12 +134,11 @@ fun RoomsContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -160,7 +161,7 @@ fun RoomsContent(
             }
             if (rooms.isNullOrEmpty()) {
                 CustomTextBold(
-                    text = "No rooms found.",
+                    text = stringResource(id = R.string.no_rooms_found),
                 )
             }
         }
@@ -218,7 +219,7 @@ fun RoomIcon(
 @Composable
 fun RoomImage(
     modifier: Modifier = Modifier,
-    contentDescription: String? = "Default background image"
+    contentDescription: String? = Constants.DEFAULT_BG_IMG_DESCRIPTION
 ) {
     Image(
         painter = painterResource(id = R.drawable.van_gogh_room),

@@ -26,6 +26,7 @@ import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.screens.login.CustomTextField
 import com.example.homeinventoryapp.ui.screens.login.LoginRegisterButtonRow
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun RegisterScreen(
@@ -33,10 +34,10 @@ fun RegisterScreen(
     topBar: @Composable () -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
     onRegisterSuccess: () -> Unit,
-) {
+){
     val uiState by viewModel.state.collectAsState()
 
-    if (uiState.isRegisterSuccessful) {
+    if(uiState.isRegisterSuccessful){
         viewModel.handleEvent(RegisterContract.RegisterEvent.ClearRegisterSuccessful)
         onRegisterSuccess()
     }
@@ -70,9 +71,9 @@ fun RegisterScreen(
 
 @Composable
 fun RegisterContent(
-    username: String = "",
-    password: String = "",
-    email: String = "",
+    username: String = Constants.EMPTY_STRING,
+    password: String = Constants.EMPTY_STRING,
+    email: String = Constants.EMPTY_STRING,
     error: String?,
     isLoading: Boolean = false,
     onRegister: () -> Unit = {},
@@ -82,7 +83,7 @@ fun RegisterContent(
     changedEmail: (String) -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
     topBar: @Composable () -> Unit = {},
-) {
+){
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -95,12 +96,11 @@ fun RegisterContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.5f  // Apply some transparency to the background image
+                        this.alpha = 0.5f
                     }
                     .blur(10.dp)
             )

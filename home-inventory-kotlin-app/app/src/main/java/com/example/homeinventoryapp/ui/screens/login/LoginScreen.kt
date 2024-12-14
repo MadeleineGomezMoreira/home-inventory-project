@@ -47,6 +47,7 @@ import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun LoginScreen(
@@ -90,8 +91,8 @@ fun LoginScreen(
 fun LoginContent(
     topBar: @Composable () -> Unit = {},
     onLogin: () -> Unit,
-    username: String = "",
-    password: String = "",
+    username: String = Constants.EMPTY_STRING,
+    password: String = Constants.EMPTY_STRING,
     error: String?,
     errorShown: () -> Unit = {},
     isLoading: Boolean = false,
@@ -111,12 +112,11 @@ fun LoginContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.5f  // Apply some transparency to the background image
+                        this.alpha = 0.5f
                     }
                     .blur(10.dp)
             )
@@ -217,21 +217,20 @@ fun CustomTextField(
             .fillMaxWidth()
             .padding(vertical = 10.dp),
         visualTransformation = if (isPassword && !passwordVisible) {
-            PasswordVisualTransformation() // Mask the password text
+            PasswordVisualTransformation()
         } else {
-            VisualTransformation.None // Show the password text if visible
+            VisualTransformation.None
         },
         trailingIcon = {
             if (isPassword) {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        contentDescription = if (passwordVisible) Constants.HIDE_PASSWORD_DESCRIPTION else Constants.SHOW_PASSWORD_DESCRIPTION
                     )
                 }
             }
         },
-        // Apply the font size using TextStyle
         textStyle = TextStyle(fontSize = fontSize.sp)
     )
 }

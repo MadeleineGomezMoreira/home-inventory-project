@@ -44,14 +44,11 @@ class CompartmentViewModel @Inject constructor(
 
             is CompartmentContract.CompartmentEvent.ErrorDisplayed -> _state.value =
                 _state.value.copy(error = null)
-
             is CompartmentContract.CompartmentEvent.ItemClicked -> _state.value = _state.value.copy(
                 itemId = event.item.id
             )
-
             is CompartmentContract.CompartmentEvent.ShowDialogue -> _state.value =
                 _state.value.copy(showCreateDialogue = true)
-
             is CompartmentContract.CompartmentEvent.ClearDialogue -> _state.value =
                 _state.value.copy(showCreateDialogue = false)
 

@@ -25,8 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Furniture
 import com.example.homeinventoryapp.domain.model.Room
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
@@ -40,6 +42,7 @@ import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 import timber.log.Timber
 
 @Composable
@@ -51,7 +54,7 @@ fun RoomScreen(
     roomId: Int,
 ) {
     val uiState by viewModel.state.collectAsState()
-    val homeId = UserSession.homeId ?: 0
+    val homeId = UserSession.homeId ?: Constants.ZERO_CODE
 
     LaunchedEffect(roomId) {
         viewModel.handleEvent(RoomContract.RoomEvent.GetRoom(roomId))
@@ -60,7 +63,6 @@ fun RoomScreen(
 
     if (uiState.furnitureId != null) {
         val furnId = uiState.furnitureId
-        Timber.d("Furniture ID: $furnId")
         viewModel.handleEvent(RoomContract.RoomEvent.ClearFurniture)
         onFurnitureClicked(furnId)
     }
@@ -96,7 +98,7 @@ fun RoomScreen(
                 viewModel.handleEvent(RoomContract.RoomEvent.CreateFurniture(furnitureName, roomId))
                 viewModel.handleEvent(RoomContract.RoomEvent.ClearCreateDialogue)
             },
-            itemToCreateWord = "Furniture"
+            itemToCreateWord = Constants.FURNITURE
         )
     }
     if (uiState.showEditDialogue) {
@@ -106,7 +108,7 @@ fun RoomScreen(
                 viewModel.handleEvent(RoomContract.RoomEvent.EditRoom(roomName, roomId, homeId))
                 viewModel.handleEvent(RoomContract.RoomEvent.ClearEditDialogue)
             },
-            itemToEditWord = "Room",
+            itemToEditWord = Constants.ROOM,
 
             )
     }
@@ -138,12 +140,11 @@ fun RoomContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -157,7 +158,7 @@ fun RoomContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = room?.name ?: "")
+            CustomTextBold(text = room?.name ?: Constants.EMPTY_STRING)
             Spacer(modifier = Modifier.height(8.dp))
             if (furniture?.isNotEmpty() == true) {
                 Text(text = "Furniture", style = MaterialTheme.typography.titleLarge)
@@ -167,7 +168,7 @@ fun RoomContent(
                     onFurnitureClicked = onFurnitureClicked
                 )
             } else {
-                Text(text = "No furniture added yet")
+                Text(text = stringResource(id = R.string.no_furniture_found))
             }
             ShowSnackbarMessage(message = error, snackbarHostState = snackbarHostState) {
                 errorShown()
@@ -203,7 +204,7 @@ fun FurnitureListSmallCard(
             iconContent = {
                 DefaultIcon(
                     imageVector = Icons.Default.Chair,
-                    contentDescription = "User icon",
+                    contentDescription = Constants.USER_ICON_DESCRIPTION,
                     size = 60.dp,
                     modifier = Modifier.padding(start = 10.dp)
                 )

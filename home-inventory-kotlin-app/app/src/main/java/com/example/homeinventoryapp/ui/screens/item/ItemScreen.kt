@@ -32,12 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.ItemDetail
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultImage
@@ -152,12 +154,11 @@ fun ItemContent(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                // Background image with blur effect
                 DefaultImage(
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer {
-                            this.alpha = 0.6f  // Apply some transparency to the background image
+                            this.alpha = 0.6f
                         }
                         .blur(15.dp)
                 )
@@ -168,13 +169,11 @@ fun ItemContent(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Add the blurred background image with the item name overlaid
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
                 ) {
-                    // DefaultImage composable for the background
                     DefaultImage(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -182,22 +181,19 @@ fun ItemContent(
                             .blur(10.dp)
                             .background(Color.Black.copy(alpha = 0.5f))
                     )
-
-                    // Overlay the item name with better alignment
                     Column(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth()
-                            .padding(bottom = 30.dp),  // Ensure it takes full width
+                            .padding(bottom = 30.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        ResizableText(item?.name?.uppercase() ?: "Name not found")
+                        ResizableText(item?.name?.uppercase() ?: stringResource(R.string.name_not_found))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Display item route and other content
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -207,7 +203,7 @@ fun ItemContent(
                     itemRoute?.let {
                         DisplayItemRoute(route = it)
                     } ?: run {
-                        CustomTextBold(text = "Route not found")
+                        CustomTextBold(text = stringResource(R.string.route_not_found))
                     }
 
                     Spacer(modifier = Modifier.height(15.dp))
@@ -248,17 +244,13 @@ fun ItemContent(
 fun ResizableText(itemName: String?) {
     var textWidth by remember { mutableStateOf(0) }
     val defaultFontSize = 30.sp
-    val density = LocalDensity.current.density
 
-    // This value could be fine-tuned based on desired scaling behavior
     val minFontSize = 16.sp
     val maxFontSize = 30.sp
 
-    // Dynamically adjust the font size based on available width
     val fontSize = remember(textWidth) {
         if (textWidth > 0) {
-            // Scale the font size based on the width of the available space
-            val scaleFactor = textWidth / 300f  // Adjust this scale factor as necessary
+            val scaleFactor = textWidth / 300f
             val adjustedSize =
                 (defaultFontSize.value * scaleFactor).coerceIn(minFontSize.value, maxFontSize.value)
             adjustedSize.sp
@@ -268,7 +260,7 @@ fun ResizableText(itemName: String?) {
     }
 
     Text(
-        text = itemName?.uppercase() ?: "Name not found",
+        text = itemName?.uppercase() ?: stringResource(R.string.name_not_found),
         style = androidx.compose.ui.text.TextStyle(
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
@@ -280,7 +272,6 @@ fun ResizableText(itemName: String?) {
             .wrapContentHeight()
             .padding(16.dp)
             .onSizeChanged { size ->
-                // Measure the width of the Text composable and update the state
                 textWidth = size.width
             },
         maxLines = 1,
@@ -293,7 +284,7 @@ fun TagChip(tag: String) {
     val pastelColor = remember { generateRandomPastelColor() }
 
     androidx.compose.material3.AssistChip(
-        onClick = { /* Handle click if needed */ },
+        onClick = { /* no onClick needed */ },
         label = {
             Text(
                 text = tag.uppercase(),
@@ -313,21 +304,19 @@ fun TagChip(tag: String) {
     )
 }
 
-/**
- * Generates a random pastel color.
- */
+
 fun generateRandomPastelColor(): Color {
-    val red = (100..255).random() // Generate higher values to keep it bright
+    val red = (100..255).random()
     val green = (100..255).random()
     val blue = (100..255).random()
-    return Color(red, green, blue, 255) // RGBA with full opacity
+    return Color(red, green, blue, 255)
 }
 
 @Composable
 fun DisplayItemRoute(route: String) {
     val places = route.split("/")
     Column(
-        modifier = Modifier.padding(vertical = 16.dp),  // Increased padding around the column
+        modifier = Modifier.padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         places.forEachIndexed { index, place ->
@@ -338,18 +327,18 @@ fun DisplayItemRoute(route: String) {
                 Text(
                     text = place,
                     fontSize = 25.sp,
-                    style = MaterialTheme.typography.bodyLarge,  // Increased text size (h5 is bigger than bodyLarge)
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(horizontal = 8.dp)  // Add some horizontal padding for spacing
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
             if (index < places.size - 1) {
                 Box(
                     modifier = Modifier
-                        .height(24.dp)  // Increased height for the line
-                        .width(4.dp)   // Increased width for the line
+                        .height(24.dp)
+                        .width(4.dp)
                         .background(MaterialTheme.colorScheme.onBackground)
-                        .padding(horizontal = 16.dp)  // Horizontal padding for better alignment
+                        .padding(horizontal = 16.dp)
                 )
             }
         }

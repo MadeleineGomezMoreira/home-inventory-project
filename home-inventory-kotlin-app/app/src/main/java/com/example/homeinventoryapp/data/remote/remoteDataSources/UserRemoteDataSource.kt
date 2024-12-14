@@ -70,7 +70,6 @@ class UserRemoteDataSource @Inject constructor(
         }
     }
 
-    //TODO: control login and registering errors
     suspend fun loginUser(user: LoginDTO): NetworkResult<Int> {
         return try {
             val result = safeApiCall { userService.loginUser(user) }
@@ -82,9 +81,15 @@ class UserRemoteDataSource @Inject constructor(
 
                 is NetworkResult.Error -> {
                     Timber.i(result.message, Constants.LOGIN_ERROR)
-                    NetworkResult.Error(
-                        result.message ?: Constants.LOGIN_ERROR
-                    )
+                    if (result.message?.contains(Constants.STATUS_CODE_UNAUTHORIZED) == true) {
+                        NetworkResult.Error(Constants.WRONG_LOGIN_INFO_ERROR)
+                    } else if (result.message?.contains(Constants.STATUS_CODE_FORBIDDEN) == true) {
+                        NetworkResult.Error(Constants.ACCOUNT_NOT_ACTIVATED_ERROR)
+                    } else if (result.message?.contains(Constants.DATA_NOT_FOUND_ERROR) == true) {
+                        NetworkResult.Error(Constants.NO_USER_FOUND_ERROR)
+                    } else {
+                        NetworkResult.Error(result.message ?: Constants.UNKNOWN_ERROR)
+                    }
                 }
 
                 is NetworkResult.Loading -> {
@@ -107,9 +112,11 @@ class UserRemoteDataSource @Inject constructor(
 
                 is NetworkResult.Error -> {
                     Timber.i(result.message, Constants.REGISTER_ERROR)
-                    NetworkResult.Error(
-                        result.message ?: Constants.REGISTER_ERROR
-                    )
+                    if (result.message?.contains(Constants.STATUS_CODE_BAD_REQUEST) == true) {
+                        NetworkResult.Error(Constants.USERNAME_OR_EMAIL_ALREADY_EXISTS_ERROR)
+                    } else {
+                        NetworkResult.Error(result.message ?: Constants.UNKNOWN_ERROR)
+                    }
                 }
 
                 is NetworkResult.Loading -> {

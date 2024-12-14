@@ -5,4 +5,23 @@
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="login_upper">LOGIN</string>
+    <string name="no_items_found">No items found</string>
+    <string name="search_for_items">Search for items...</string>
+    <string name="no_rooms_found">No rooms found</string>
+    <string name="no_furniture_found">No furniture found</string>
+    <string name="no_homes_found">No homes found</string>
+    <string name="member_homes">Member Homes</string>
+    <string name="owned_homes">Owned Homes</string>
+    <string name="name_not_found">Name not found</string>
+    <string name="route_not_found">Route not found</string>
+    <string name="home_members">Home members</string>
+    <string name="home_owner">Home Owner</string>
+    <string name="no_compartments_found">No compartments found</string>
+    <string name="items">Items</string>
+    <string name="invitations">Invitations</string>
+    <string name="no_invitations_found">No invitations found</string>
+    <string name="email_upper">EMAIL</string>
+    <string name="username_upper">USERNAME</string>
+    <string name="delete_account_upper">DELETE ACCOUNT</string>
+    <string name="pending_invitation">Pending Invitation</string>
 </resources>

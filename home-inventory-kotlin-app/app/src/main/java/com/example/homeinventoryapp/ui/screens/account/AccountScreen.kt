@@ -29,10 +29,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Invitation
 import com.example.homeinventoryapp.domain.model.User
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
@@ -45,6 +47,7 @@ import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun AccountScreen(
@@ -55,7 +58,7 @@ fun AccountScreen(
 ) {
 
     val uiState by viewModel.state.collectAsState()
-    val userId = UserSession.userId ?: 0
+    val userId = UserSession.userId ?: Constants.ZERO_CODE
 
     LaunchedEffect(userId) {
         viewModel.handleEvent(AccountContract.AccountEvent.GetUser(userId))
@@ -127,7 +130,6 @@ fun AccountContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with gradient overlay
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
@@ -155,14 +157,14 @@ fun AccountContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = "USERNAME", modifier = Modifier.align(Alignment.Start))
-            CustomText(text = user?.username ?: "", modifier = Modifier.align(Alignment.Start))
+            CustomTextBold(text = stringResource(R.string.username_upper), modifier = Modifier.align(Alignment.Start))
+            CustomText(text = user?.username ?: Constants.EMPTY_STRING, modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
-            CustomTextBold(text = "EMAIL", modifier = Modifier.align(Alignment.Start))
-            CustomText(text = user?.email ?: "", modifier = Modifier.align(Alignment.Start))
+            CustomTextBold(text = stringResource(R.string.email_upper), modifier = Modifier.align(Alignment.Start))
+            CustomText(text = user?.email ?: Constants.EMPTY_STRING, modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
             if (invitations?.isNotEmpty() == true) {
-                Text(text = "Invitations", style = MaterialTheme.typography.titleLarge)
+                Text(text = stringResource(R.string.invitations), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 InvitationsListSmallCard(
                     invitations = invitations,
@@ -173,7 +175,7 @@ fun AccountContent(
             }
             if (invitations.isNullOrEmpty()) {
                 CustomTextBold(
-                    text = "No invitations found",
+                    text = stringResource(R.string.no_invitations_found),
                     modifier = Modifier.align(Alignment.Start)
                 )
             }
@@ -188,7 +190,7 @@ fun AccountContent(
                 colors = ButtonDefaults.buttonColors(ButtonDefaults.buttonColors().disabledContainerColor),
                 content = {
                     Text(
-                        text = "DELETE ACCOUNT",
+                        text = stringResource(R.string.delete_account_upper),
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 10.dp),
@@ -225,11 +227,11 @@ fun InvitationsListSmallCard(
         ClickableSmallCard(
             item = user,
             onItemClicked = onInvitationClicked,
-            textContent = { "Pending Invitation" },
+            textContent = { stringResource(R.string.pending_invitation) },
             iconContent = {
                 DefaultIcon(
                     imageVector = Icons.Default.InsertInvitation,
-                    contentDescription = "Insert Invitation Icon",
+                    contentDescription = Constants.INSERT_INVITATION_ICON_DESCRIPTION,
                     size = 60.dp,
                     modifier = Modifier.padding(start = 10.dp)
                 )

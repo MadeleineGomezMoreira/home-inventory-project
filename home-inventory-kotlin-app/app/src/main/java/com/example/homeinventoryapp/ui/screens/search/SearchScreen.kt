@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +43,7 @@ import com.example.homeinventoryapp.ui.common.DefaultImage
 import com.example.homeinventoryapp.ui.common.ListSquareCards
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun SearchScreen(
@@ -73,7 +75,6 @@ fun SearchScreen(
     SearchContent(
         items = uiState.items,
         error = uiState.error,
-        isLoading = uiState.isLoading,
         topBar = topBar,
         bottomNavigationBar = bottomNavigationBar,
         errorShown = {
@@ -91,7 +92,6 @@ fun SearchScreen(
 fun SearchContent(
     items: List<Item>? = emptyList(),
     error: String?,
-    isLoading: Boolean = false,
     searchWord: String,
     onSearchWordChanged: (String) -> Unit,
     onItemClicked: (Any?) -> Unit = {},
@@ -111,12 +111,11 @@ fun SearchContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -130,14 +129,13 @@ fun SearchContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Search TextField
             OutlinedTextField(
                 value = searchWord,
                 onValueChange = { onSearchWordChanged(it) },
                 modifier = Modifier
                     .wrapContentSize()
                     .padding(vertical = 16.dp),
-                placeholder = { Text(text = "Search for items...") },
+                placeholder = { Text(text = stringResource(id = R.string.search_for_items)) },
                 singleLine = true,
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -160,7 +158,7 @@ fun SearchContent(
                 }
             } else {
                 CustomTextBold(
-                    text = "No items found.",
+                    text = stringResource(id = R.string.no_items_found),
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
@@ -190,7 +188,7 @@ fun ItemIcon(
 @Composable
 fun ItemImage(
     modifier: Modifier = Modifier,
-    contentDescription: String? = "Default background image"
+    contentDescription: String? = Constants.DEFAULT_BG_IMG_DESCRIPTION
 ) {
     Image(
         painter = painterResource(id = R.drawable.van_gogh_shoes),

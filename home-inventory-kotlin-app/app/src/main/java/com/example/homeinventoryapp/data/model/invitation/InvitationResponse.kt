@@ -2,7 +2,7 @@ package com.example.homeinventoryapp.data.model.invitation
 
 import com.google.gson.annotations.SerializedName
 
-data class InvitationResponse(
+data class InvitationResponse (
     @SerializedName("id")
     var id: Int,
     @SerializedName("inviterId")

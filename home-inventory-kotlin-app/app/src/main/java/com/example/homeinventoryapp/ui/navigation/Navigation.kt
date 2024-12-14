@@ -68,7 +68,7 @@ fun Navigation() {
         }
         composable(
             route = Constants.ACCOUNT_ROUTE,
-        ) {
+        ){
             AccountScreen(
                 topBar = {
                     TopBar(
@@ -126,7 +126,7 @@ fun Navigation() {
                     onHomeWasDeleted = {
                         navController.navigate(Constants.MY_HOMES_ROUTE)
                     }
-                )
+                    )
             }
         }
         composable(

@@ -26,10 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.User
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
@@ -43,6 +45,7 @@ import com.example.homeinventoryapp.ui.common.SendInvitationDialog
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
 import com.example.homeinventoryapp.ui.screens.item.ResizableText
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun HomeScreen(
@@ -125,7 +128,7 @@ fun HomeScreen(
             onItemEdit = { homeName ->
                 viewModel.handleEvent(HomeContract.HomeEvent.EditHome(homeName, homeId))
             },
-            itemToEditWord = "Home"
+            itemToEditWord = Constants.HOME
         )
     }
 }
@@ -156,24 +159,20 @@ fun HomeContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.4f  // Apply some transparency to the background image
+                        this.alpha = 0.4f
                     }
                     .blur(15.dp)
             )
         }
-
-        // Add the blurred background image with the item name overlaid
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
         ) {
-            // DefaultImage composable for the background
             DefaultImage(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -182,14 +181,13 @@ fun HomeContent(
                     .background(Color.Black.copy(alpha = 0.5f))
             )
 
-            // Overlay the item name with better alignment
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                ResizableText(home?.name?.uppercase() ?: "Home name not found")
+                ResizableText(home?.name?.uppercase() ?: stringResource(R.string.name_not_found))
             }
         }
 
@@ -204,11 +202,9 @@ fun HomeContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-//            CustomTextBold(text = home?.name ?: "")
-//            Spacer(modifier = Modifier.height(8.dp))
             if (owner != null) {
                 Text(
-                    text = "House Owner",
+                    text = stringResource(R.string.home_owner),
                     style = MaterialTheme.typography.titleLarge,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold
@@ -220,7 +216,7 @@ fun HomeContent(
                     iconContent = {
                         DefaultIcon(
                             imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "User icon",
+                            contentDescription = Constants.USER_ICON_DESCRIPTION,
                             size = 60.dp,
                             modifier = Modifier.padding(start = 10.dp)
                         )
@@ -230,7 +226,7 @@ fun HomeContent(
             if (members?.isNotEmpty() == true) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "House Members",
+                    text = stringResource(R.string.home_members),
                     style = MaterialTheme.typography.titleLarge,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.SemiBold
@@ -239,7 +235,7 @@ fun HomeContent(
                 UsersListSmallCard(
                     users = members,
                     onUserClicked = {
-                        //should do nothing here
+                        /* no OnClick needed */
                     }
                 )
             }
@@ -277,7 +273,7 @@ fun UsersListSmallCard(
             iconContent = {
                 DefaultIcon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "User icon",
+                    contentDescription = Constants.USER_ICON_DESCRIPTION,
                     size = 60.dp,
                     modifier = Modifier.padding(start = 10.dp)
                 )

@@ -27,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.ui.common.ClickableBigCard
 import com.example.homeinventoryapp.ui.common.CreateItemDialog
@@ -40,6 +42,7 @@ import com.example.homeinventoryapp.ui.common.ListBigCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun MyHomesScreen(
@@ -82,7 +85,7 @@ fun MyHomesScreen(
                     viewModel.handleEvent(MyHomesContract.MyHomesEvent.ShowDialogue)
                 }
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Home")
+                Icon(imageVector = Icons.Filled.Add, contentDescription = Constants.ADD_HOME_DESCRIPTION)
             }
         }
     )
@@ -122,12 +125,11 @@ fun MyHomesContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -141,31 +143,59 @@ fun MyHomesContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            if (ownerHomes?.isNotEmpty() == true) {
-                Text(
-                    text = "Owned Homes",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                HomeListBigCard(
-                    homes = ownerHomes,
-                    onHomeClicked = onHomeClicked
-                )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                if (ownerHomes?.isNotEmpty() == true) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Text(
+                            text = stringResource(R.string.owned_homes),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HomeListBigCard(
+                            homes = ownerHomes,
+                            onHomeClicked = onHomeClicked
+                        )
+                    }
+                }
             }
-            if (memberHomes?.isNotEmpty() == true) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Member Homes", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                HomeListBigCard(
-                    homes = memberHomes,
-                    onHomeClicked = onHomeClicked
-                )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                if (memberHomes?.isNotEmpty() == true) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Text(
+                            text = stringResource(R.string.member_homes),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HomeListBigCard(
+                            homes = memberHomes,
+                            onHomeClicked = onHomeClicked
+                        )
+                    }
+                }
             }
             if ((ownerHomes.isNullOrEmpty() && memberHomes.isNullOrEmpty())) {
                 CustomTextBold(
-                    text = "No homes found.",
+                    text = stringResource(R.string.no_homes_found),
                 )
             }
         }

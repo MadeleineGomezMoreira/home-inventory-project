@@ -7,8 +7,8 @@ object Constants {
     //HOMES
     const val GET_HOMES_BY_USER_PATH = "homes/{id}"
     const val GET_HOME_PATH = "homes/single/{id}"
-    const val REGISTER_HOME_PATH = "homes"
-    const val UPDATE_HOME_PATH = "homes"
+    const val REGISTER_HOME_PATH = "homes/"
+    const val UPDATE_HOME_PATH = "homes/"
     const val DELETE_HOME_PATH = "homes/{id}"
     const val GET_HOME_OWNERSHIP_PATH = "homes/{homeId}/ownership/{userId}"
 
@@ -17,8 +17,8 @@ object Constants {
     const val DELETE_USER_PATH = "users/{id}"
     const val GET_USER_BY_ID_PATH = "users/{id}"
     const val GET_USERS_BY_HOME_ID_PATH = "users/home/{id}"
-    const val USERS_REGISTER_PATH = "users"
-    const val USERS_LOGIN_PATH = "login"
+    const val USERS_REGISTER_PATH = "users/"
+    const val USERS_LOGIN_PATH = "login/"
 
     //INVITATIONS
     const val GET_INVITATION_INFO_PATH = "invitations/info/{id}"
@@ -30,30 +30,30 @@ object Constants {
     //ROOMS
     const val GET_ROOMS_BY_HOME_PATH = "rooms/home/{id}"
     const val GET_ROOM_BY_ID_PATH = "rooms/{id}"
-    const val REGISTER_ROOM_PATH = "rooms"
-    const val UPDATE_ROOM_PATH = "rooms"
+    const val REGISTER_ROOM_PATH = "rooms/"
+    const val UPDATE_ROOM_PATH = "rooms/"
     const val DELETE_ROOM_PATH = "rooms/{id}"
 
     //FURNITURE
     const val GET_FURNITURE_BY_ROOM_PATH = "furniture/room/{id}"
     const val GET_FURNITURE_BY_ID_PATH = "furniture/{id}"
-    const val REGISTER_FURNITURE_PATH = "furniture"
-    const val UPDATE_FURNITURE_PATH = "furniture"
+    const val REGISTER_FURNITURE_PATH = "furniture/"
+    const val UPDATE_FURNITURE_PATH = "furniture/"
     const val DELETE_FURNITURE_PATH = "furniture/{id}"
 
     //COMPARTMENTS
     const val GET_COMPARTMENTS_BY_FURNITURE_PATH = "compartments/furniture/{id}"
     const val GET_COMPARTMENT_BY_ID_PATH = "compartments/{id}"
-    const val REGISTER_COMPARTMENT_PATH = "compartments"
-    const val UPDATE_COMPARTMENT_PATH = "compartments"
+    const val REGISTER_COMPARTMENT_PATH = "compartments/"
+    const val UPDATE_COMPARTMENT_PATH = "compartments/"
     const val DELETE_COMPARTMENT_PATH = "compartments/{id}"
 
     //ITEMS
     const val GET_ITEMS_BY_COMPARTMENT_PATH = "items/comp/{id}"
     const val GET_ITEMS_BY_STRING_PATH = "items/home/{id}"
     const val GET_ITEM_BY_ID_PATH = "items/{id}"
-    const val REGISTER_ITEM_PATH = "items"
-    const val UPDATE_ITEM_PATH = "items"
+    const val REGISTER_ITEM_PATH = "items/"
+    const val UPDATE_ITEM_PATH = "items/"
     const val DELETE_ITEM_PATH = "items/{id}"
     const val GET_ITEM_ROUTE_PATH = "items/route/{id}"
     const val MOVE_ITEM_ROUTE_PATH = "items/move/"
@@ -143,15 +143,15 @@ object Constants {
     const val DELETING_FURNITURE_ERROR = "There was an error while deleting the piece of furniture"
     const val DELETING_COMPARTMENT_ERROR = "There was an error while deleting the compartment"
     const val DELETING_ITEM_ERROR = "There was an error while deleting the item"
-    const val RETRIEVING_HOME_OWNERSHIP_ERROR =
-        "There was an error while retrieving the home's ownership status"
+    const val RETRIEVING_HOME_OWNERSHIP_ERROR = "There was an error while retrieving the home's ownership status"
 
     //UI ERROR MESSAGES
     const val PERMISSION_DENIED_ERROR =
         "ACCESS DENIED - ONLY USERS WITH GRANTED ACCESS CAN ACCESS THIS FEATURE"
     const val ACTIVATION_REQUIRED_ERROR =
         "PLEASE ACTIVATE YOUR ACCOUNT - CHECK YOUR EMAIL FOR ACTIVATION LINK"
-    const val WRONG_LOGIN_INFO_ERROR = "ACCESS DENIED - WRONG USERNAME OR PASSWORD"
+    const val WRONG_LOGIN_INFO_ERROR = "ACCESS DENIED - WRONG PASSWORD"
+    const val NO_USER_ERROR = "ACCESS DENIED - NO USER FOUND WITH THAT USERNAME"
     const val ACCOUNT_NOT_ACTIVATED_ERROR =
         "ACCOUNT NOT ACTIVATED - PLEASE ACTIVATE YOUR ACCOUNT BEFORE LOGGING IN"
     const val USERNAME_OR_EMAIL_ALREADY_EXISTS_ERROR =
@@ -193,4 +193,19 @@ object Constants {
 
     //USE-CASE CONSTANTS
     const val ZERO_CODE = 0
+
+    //DESCRIPTION CONSTANTS
+    const val HIDE_PASSWORD_DESCRIPTION = "Hide password"
+    const val SHOW_PASSWORD_DESCRIPTION = "Show password"
+    const val DEFAULT_BG_IMG_DESCRIPTION = "Default background image"
+    const val ADD_ROOM_DESCRIPTION = "Add Room"
+    const val ADD_HOME_DESCRIPTION = "Add Home"
+    const val USER_ICON_DESCRIPTION = "User Icon"
+    const val INSERT_INVITATION_ICON_DESCRIPTION = "Insert Invitation Icon"
+
+    //TEXT CONSTANTS
+    const val ROOM = "Room"
+    const val HOME = "Home"
+    const val COMPARTMENT = "Compartment"
+    const val FURNITURE = "Furniture"
 }

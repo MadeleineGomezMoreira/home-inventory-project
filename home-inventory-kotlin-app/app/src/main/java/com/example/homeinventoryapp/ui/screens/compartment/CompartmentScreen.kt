@@ -27,8 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Compartment
 import com.example.homeinventoryapp.domain.model.Item
 import com.example.homeinventoryapp.ui.common.ClickableSquareCard
@@ -40,6 +42,7 @@ import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.screens.search.ItemIcon
 import com.example.homeinventoryapp.ui.screens.search.ItemImage
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun CompartmentScreen(
@@ -127,12 +130,11 @@ fun CompartmentContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -145,10 +147,10 @@ fun CompartmentContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = compartment?.name ?: "")
+            CustomTextBold(text = compartment?.name ?: Constants.EMPTY_STRING)
             Spacer(modifier = Modifier.height(8.dp))
             if (items?.isNotEmpty() == true) {
-                Text(text = "Items", style = MaterialTheme.typography.titleLarge)
+                Text(text = stringResource(R.string.items), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 ListSquareCards(
                     items = items,
@@ -165,7 +167,7 @@ fun CompartmentContent(
             }
             if (items.isNullOrEmpty()) {
                 CustomTextBold(
-                    text = "No items found.",
+                    text = stringResource(R.string.no_items_found),
                 )
             }
         }

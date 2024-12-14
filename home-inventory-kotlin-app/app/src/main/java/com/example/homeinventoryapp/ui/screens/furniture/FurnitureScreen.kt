@@ -25,8 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.homeinventoryapp.R
 import com.example.homeinventoryapp.domain.model.Compartment
 import com.example.homeinventoryapp.domain.model.Furniture
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
@@ -39,6 +41,7 @@ import com.example.homeinventoryapp.ui.common.FloatingActionMenuAddEdit
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
+import com.example.homeinventoryapp.utils.Constants
 
 @Composable
 fun FurnitureScreen(
@@ -73,7 +76,7 @@ fun FurnitureScreen(
                 )
                 viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearCreateDialogue)
             },
-            itemToCreateWord = "Compartment"
+            itemToCreateWord = Constants.COMPARTMENT
         )
     }
 
@@ -87,7 +90,7 @@ fun FurnitureScreen(
                     )
                 )
             },
-            itemToEditWord = "Furniture"
+            itemToEditWord = Constants.FURNITURE
         )
     }
 
@@ -142,12 +145,11 @@ fun FurnitureContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Background image with blur effect
             DefaultImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        this.alpha = 0.6f  // Apply some transparency to the background image
+                        this.alpha = 0.6f
                     }
                     .blur(15.dp)
             )
@@ -160,7 +162,7 @@ fun FurnitureContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomTextBold(text = furniture?.name ?: "")
+            CustomTextBold(text = furniture?.name ?: Constants.EMPTY_STRING)
             Spacer(modifier = Modifier.height(8.dp))
             if (compartments?.isNotEmpty() == true) {
                 Text(text = "Furniture", style = MaterialTheme.typography.titleLarge)
@@ -170,7 +172,7 @@ fun FurnitureContent(
                     onCompartmentClicked = onCompartmentClicked
                 )
             } else {
-                Text(text = "No items found")
+                Text(text = stringResource(R.string.no_compartments_found))
             }
             ShowSnackbarMessage(message = error, snackbarHostState = snackbarHostState) {
                 errorShown()
@@ -205,7 +207,7 @@ fun CompartmentListSmallCard(
             iconContent = {
                 DefaultIcon(
                     imageVector = Icons.Default.FolderCopy,
-                    contentDescription = "User icon",
+                    contentDescription = Constants.USER_ICON_DESCRIPTION,
                     size = 60.dp,
                     modifier = Modifier.padding(start = 10.dp)
                 )
