@@ -34,7 +34,8 @@ async def get_items_from_compartment(session: AsyncSession, comp_id: int):
     if not items:
         raise ItemNotFoundException()
     
-    return
+    
+    return items
 
 async def get_item(session: AsyncSession, item_id: int):
     """
