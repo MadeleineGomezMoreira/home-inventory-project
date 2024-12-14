@@ -1,0 +1,896 @@
+{
+	"info": {
+		"_postman_id": "e4c0be80-ac07-4ee9-8b23-a21cc87603d2",
+		"name": "HOME-INVENTORY",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23558101"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "save_user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Object was created - status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"abcde\",\r\n  \"password\": \"12345\",\r\n  \"email\": \"tosigether598@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}users",
+							"host": [
+								"{{base_server_url}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_users_in_home_by_role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}users/home/10",
+							"host": [
+								"{{base_server_url}}users"
+							],
+							"path": [
+								"home",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}users/25",
+							"host": [
+								"{{base_server_url}}users"
+							],
+							"path": [
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login_by_user_password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"abcd\",\r\n    \"password\": \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}login/",
+							"host": [
+								"{{base_server_url}}login"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}users/3",
+							"host": [
+								"{{base_server_url}}users"
+							],
+							"path": [
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Homes",
+			"item": [
+				{
+					"name": "save_home",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"homeName\":\"Mi Casa D\",\r\n    \"ownedBy\":25\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}homes/",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}homes/single/10",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								"single",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_home",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":1,\r\n    \"homeName\":\"Casa Joanes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}homes/",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_home",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}homes/8",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "leave/be_kicked_from_a_home",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}homes/3/kick/1",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								"3",
+								"kick",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_home_ownership",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}homes/7/ownership/4",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								"7",
+								"ownership",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_homes_by_user_by_role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}homes/4",
+							"host": [
+								"{{base_server_url}}homes"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rooms",
+			"item": [
+				{
+					"name": "save_room",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomName\":\"Baño azul\",\r\n    \"homeId\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}rooms/",
+							"host": [
+								"{{base_server_url}}rooms"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_rooms_from_home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}rooms/home/6",
+							"host": [
+								"{{base_server_url}}rooms"
+							],
+							"path": [
+								"home",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_room",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":3,\r\n    \"roomName\":\"Salón Principal\",\r\n    \"homeId\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}rooms/",
+							"host": [
+								"{{base_server_url}}rooms"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_room",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}rooms/12",
+							"host": [
+								"{{base_server_url}}rooms"
+							],
+							"path": [
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}rooms/4",
+							"host": [
+								"{{base_server_url}}rooms"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invitations",
+			"item": [
+				{
+					"name": "send_invitation_to_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"inviterId\": 25,\r\n    \"inviteeUsername\": \"LeonardoDiCap\",\r\n    \"homeId\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}invitations/send/",
+							"host": [
+								"{{base_server_url}}invitations"
+							],
+							"path": [
+								"send",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept_invitation_from_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}invitations/accept/6",
+							"host": [
+								"{{base_server_url}}invitations"
+							],
+							"path": [
+								"accept",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reject_invitation_from_user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}invitations/decline/2",
+							"host": [
+								"{{base_server_url}}invitations"
+							],
+							"path": [
+								"decline",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "see_all_invitations_from_user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}invitations/5",
+							"host": [
+								"{{base_server_url}}invitations"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_invitation_info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}invitations/info/7",
+							"host": [
+								"{{base_server_url}}invitations"
+							],
+							"path": [
+								"info",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Furniture",
+			"item": [
+				{
+					"name": "save_furniture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"furnName\": \"Cómoda madera\",\r\n    \"roomId\": 22\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}furniture/",
+							"host": [
+								"{{base_server_url}}furniture"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_furniture_from_room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}furniture/room/14",
+							"host": [
+								"{{base_server_url}}furniture"
+							],
+							"path": [
+								"room",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_furniture",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"furnName\":\"Mueble Tele\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}furniture/",
+							"host": [
+								"{{base_server_url}}furniture"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_furniture",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}furniture/4",
+							"host": [
+								"{{base_server_url}}furniture"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_furniture_by_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}furniture/2",
+							"host": [
+								"{{base_server_url}}furniture"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Compartments",
+			"item": [
+				{
+					"name": "get_compartments_in_furniture",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}compartments/furniture/44",
+							"host": [
+								"{{base_server_url}}compartments"
+							],
+							"path": [
+								"furniture",
+								"44"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save_compartment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"compName\" : \"Balda arriba\",\r\n    \"furnId\": 11\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}compartments/",
+							"host": [
+								"{{base_server_url}}compartments"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_compartment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}compartments/2",
+							"host": [
+								"{{base_server_url}}compartments"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_compartment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"compName\": \"Cajón superior\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}compartments/",
+							"host": [
+								"{{base_server_url}}compartments"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_compartment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}compartments/14",
+							"host": [
+								"{{base_server_url}}compartments"
+							],
+							"path": [
+								"14"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "get_items_from_compartment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}items/comp/39",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"comp",
+								"39"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save_items_to_compartment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemName\": \"Camiseta ACDC\",\r\n    \"compId\": 15,\r\n    \"tags\": [\"música\", \"ropa\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}items/",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_items_by_string",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}items/home/6?search_word=vaso",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"home",
+								"6"
+							],
+							"query": [
+								{
+									"key": "search_word",
+									"value": "vaso"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve_single_item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}items/2",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemName\": \"lapicero\",\r\n    \"compId\": 7,\r\n    \"id\": 3,\r\n    \"tags\": [\r\n        {\r\n            \"id\": 2,\r\n            \"tagName\": \"escritura\",\r\n            \"homeId\": 6\r\n        },\r\n        {\r\n            \"id\": 3,\r\n            \"tagName\": \"caligrafía\",\r\n            \"homeId\": 6\r\n        },\r\n        {\r\n            \"id\": 4,\r\n            \"tagName\": \"arte\",\r\n            \"homeId\": 6\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}items/",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}items/25",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_item_route",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_server_url}}items/route/2",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"route",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "move_item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemId\": 41,\r\n    \"compId\": 7\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_server_url}}items/move/",
+							"host": [
+								"{{base_server_url}}items"
+							],
+							"path": [
+								"move",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://192.168.1.160:8085/"
+		},
+		{
+			"key": "base_server_url",
+			"value": "https://informatica.iesquevedo.es/home-inventory/",
+			"type": "default"
+		}
+	]
+}
