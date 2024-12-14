@@ -10,16 +10,19 @@ object Constants {
     const val REGISTER_HOME_PATH = "homes"
     const val UPDATE_HOME_PATH = "homes"
     const val DELETE_HOME_PATH = "homes/{id}"
+    const val GET_HOME_OWNERSHIP_PATH = "homes/{homeId}/ownership/{userId}"
 
     //USERS
     const val GET_USER_BY_USERNAME_PATH = "users/{username}"
+    const val DELETE_USER_PATH = "users/{id}"
     const val GET_USER_BY_ID_PATH = "users/{id}"
     const val GET_USERS_BY_HOME_ID_PATH = "users/home/{id}"
     const val USERS_REGISTER_PATH = "users"
     const val USERS_LOGIN_PATH = "login"
 
     //INVITATIONS
-    const val SEND_INVITATION_PATH = "invitations/send"
+    const val GET_INVITATION_INFO_PATH = "invitations/info/{id}"
+    const val SEND_INVITATION_PATH = "invitations/send/"
     const val ACCEPT_INVITATION_PATH = "invitations/accept/{id}"
     const val DECLINE_INVITATION_PATH = "invitations/decline/{id}"
     const val GET_INVITATIONS_BY_USER = "invitations/{id}"
@@ -53,6 +56,7 @@ object Constants {
     const val UPDATE_ITEM_PATH = "items"
     const val DELETE_ITEM_PATH = "items/{id}"
     const val GET_ITEM_ROUTE_PATH = "items/route/{id}"
+    const val MOVE_ITEM_ROUTE_PATH = "items/move/"
 
     //LOGIN-REGISTER
     const val LOGIN_ROUTE = "login"
@@ -92,6 +96,8 @@ object Constants {
     //LOGGING ERROR MESSAGES
     const val RETRIEVING_INVITATIONS_BY_USER_ERROR =
         "There was an error while retrieving the user's received invitations"
+    const val RETRIEVING_INVITATION_INFO_ERROR =
+        "There was an error while retrieving the invitation's information"
     const val SENDING_INVITATION_ERROR = "There was an error while sending the invitation"
     const val ACCEPTING_INVITATION_ERROR = "There was an error while accepting the invitation"
     const val DECLINING_INVITATION_ERROR = "There was an error while declining the invitation"
@@ -112,6 +118,8 @@ object Constants {
     const val RETRIEVING_ITEM_ROUTE_ERROR = "There was an error while retrieving the item's route"
     const val RETRIEVING_ITEMS_BY_COMPARTMENT_ERROR =
         "There was an error while retrieving the items in a specific compartment"
+    const val MOVING_ITEMS_ERROR =
+        "There was an error while moving items to a specific compartment"
     const val RETRIEVING_ITEMS_BY_SEARCH_WORD_ERROR =
         "There was an error while retrieving the items matching the search word"
     const val RETRIEVING_USER_BY_USERNAME_ERROR =
@@ -129,11 +137,13 @@ object Constants {
     const val UPDATING_FURNITURE_ERROR = "There was an error while updating the piece of furniture"
     const val UPDATING_COMPARTMENT_ERROR = "There was an error while updating the compartment"
     const val UPDATING_ITEM_ERROR = "There was an error while saving the item"
+    const val DELETING_USER_ERROR = "There was an error while deleting the user"
     const val DELETING_HOME_ERROR = "There was an error while deleting the home"
     const val DELETING_ROOM_ERROR = "There was an error while deleting the room"
     const val DELETING_FURNITURE_ERROR = "There was an error while deleting the piece of furniture"
     const val DELETING_COMPARTMENT_ERROR = "There was an error while deleting the compartment"
     const val DELETING_ITEM_ERROR = "There was an error while deleting the item"
+    const val RETRIEVING_HOME_OWNERSHIP_ERROR = "There was an error while retrieving the home's ownership status"
 
     //UI ERROR MESSAGES
     const val PERMISSION_DENIED_ERROR =
@@ -150,7 +160,7 @@ object Constants {
     const val MY_HOMES_ROUTE = "my_homes_screen"
     const val HOME_ROUTE = "home_screen/{homeId}"
     const val HOME_SCREEN_ROUTE = "home_screen"
-    const val ACCOUNT_ROUTE = "account_screen/{userId}"
+    const val ACCOUNT_ROUTE = "account_screen"
     const val ROOMS_ROUTE = "rooms_screen/{homeId}"
     const val ROOM_ROUTE = "room_screen/{roomId}"
     const val SEARCH_ITEMS_ROUTE = "search_items_screen"

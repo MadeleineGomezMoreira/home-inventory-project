@@ -1,5 +1,6 @@
 package com.example.homeinventoryapp.data.remote.remoteDataSources
 
+import com.example.homeinventoryapp.data.model.item.ItemMoveRequest
 import com.example.homeinventoryapp.data.model.toItem
 import com.example.homeinventoryapp.data.model.toItemDetail
 import com.example.homeinventoryapp.data.model.toItemRequestCreate
@@ -16,6 +17,32 @@ import javax.inject.Inject
 class ItemRemoteDataSource @Inject constructor(
     private val itemService: ItemService,
 ) : BaseApiResponse() {
+
+    suspend fun moveItem(item: ItemMoveRequest): NetworkResult<Unit> {
+        return try {
+            val result = safeApiCall { itemService.moveItem(item) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    NetworkResult.Success(Unit)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(
+                        result.message ?: Constants.EMPTY_MESSAGE,
+                        Constants.MOVING_ITEMS_ERROR
+                    )
+                    NetworkResult.Error(result.message ?: Constants.MOVING_ITEMS_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.RETRIEVING_ITEMS_BY_COMPARTMENT_ERROR)
+            NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
 
     suspend fun getItemRoute(id: Int): NetworkResult<String> {
         return try {

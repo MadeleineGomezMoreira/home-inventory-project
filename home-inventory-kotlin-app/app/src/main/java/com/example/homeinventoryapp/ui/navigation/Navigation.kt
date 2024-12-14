@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.homeinventoryapp.ui.common.BottomBar
 import com.example.homeinventoryapp.ui.common.TopBar
+import com.example.homeinventoryapp.ui.screens.account.AccountScreen
 import com.example.homeinventoryapp.ui.screens.compartment.CompartmentScreen
 import com.example.homeinventoryapp.ui.screens.furniture.FurnitureScreen
 import com.example.homeinventoryapp.ui.screens.home.HomeScreen
@@ -66,6 +67,26 @@ fun Navigation() {
             )
         }
         composable(
+            route = Constants.ACCOUNT_ROUTE,
+        ){
+            AccountScreen(
+                topBar = {
+                    TopBar(
+                        title = Constants.ACCOUNT_BAR_NAME
+                    )
+                },
+                bottomNavigationBar = {
+                    BottomBar(
+                        navController = navController,
+                        screens = screensBottomBar,
+                    )
+                },
+                onAccountDeleted = {
+                    navController.navigate(Constants.LOGIN_ROUTE)
+                }
+            )
+        }
+        composable(
             route = Constants.MY_HOMES_ROUTE
         ) {
             MyHomesScreen(
@@ -104,18 +125,14 @@ fun Navigation() {
                         )
                     },
                     homeId = retrievedHomeId.toInt(),
-                    onUserClicked = { userId ->
-                        navController.navigate("account_screen/$userId")
+                    onUserClicked = {
+                        navController.navigate(Constants.ACCOUNT_ROUTE)
                     },
+                    onHomeWasDeleted = {
+                        navController.navigate(Constants.MY_HOMES_ROUTE)
+                    }
                     )
             }
-        }
-        composable(
-            route = Constants.ACCOUNT_ROUTE,
-            arguments = listOf(navArgument(Constants.USER_ID) { type = NavType.StringType })
-
-        ){
-
         }
         composable(
             route = Constants.SEARCH_ITEMS_ROUTE

@@ -30,8 +30,12 @@ import com.example.homeinventoryapp.domain.model.User
 import com.example.homeinventoryapp.ui.common.ClickableSmallCard
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.EditItemDialog
+import com.example.homeinventoryapp.ui.common.FloatingActionMenuEditDeleteAdd
+import com.example.homeinventoryapp.ui.common.InvitationDialog
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
+import com.example.homeinventoryapp.ui.common.SendInvitationDialog
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
 import com.example.homeinventoryapp.ui.common.di.UserSession
 
@@ -41,15 +45,16 @@ fun HomeScreen(
     bottomNavigationBar: @Composable () -> Unit = {},
     topBar: @Composable () -> Unit = {},
     onUserClicked: (Any?) -> Unit,
+    onHomeWasDeleted: () -> Unit,
     homeId: Int,
 ) {
     val uiState by viewModel.state.collectAsState()
-
-    //TODO: if owner id matches userId, show delete + edit buttons
+    val userId = UserSession.userId ?: 0
 
     LaunchedEffect(homeId) {
         viewModel.handleEvent(HomeContract.HomeEvent.GetHome(homeId))
         viewModel.handleEvent(HomeContract.HomeEvent.GetHomeUsers(homeId))
+        viewModel.handleEvent(HomeContract.HomeEvent.GetUserOwner(homeId, UserSession.userId ?: 0))
         UserSession.homeId = homeId
     }
 
@@ -57,6 +62,10 @@ fun HomeScreen(
         val userId = uiState.userId
         viewModel.handleEvent(HomeContract.HomeEvent.ClearUser)
         onUserClicked(userId)
+    }
+    if (uiState.homeWasDeleted) {
+        viewModel.handleEvent(HomeContract.HomeEvent.ClearHomeWasDeleted)
+        onHomeWasDeleted()
     }
 
     HomeContent(
@@ -73,7 +82,43 @@ fun HomeScreen(
         onUserClicked = { user ->
             viewModel.handleEvent(HomeContract.HomeEvent.UserClicked(user as User))
         },
+        floatingActionButton = {
+            if (uiState.isUserOwner == true) {
+                FloatingActionMenuEditDeleteAdd(
+                    onDeleteElementClicked = {
+                        viewModel.handleEvent(HomeContract.HomeEvent.DeleteHome(homeId))
+                    },
+                    onEditElementClicked = {
+                        viewModel.handleEvent(HomeContract.HomeEvent.ShowEditDialogue)
+                    },
+                    onAddHomeMember = {
+                        viewModel.handleEvent(HomeContract.HomeEvent.ShowInvitationDialogue)
+                    }
+                )
+            }
+        }
     )
+
+    if(uiState.showInvitationDialogue){
+        SendInvitationDialog(
+            onDismiss = {
+                viewModel.handleEvent(HomeContract.HomeEvent.ClearInvitationDialogue)
+            },
+            onSendInvitation = { username ->
+                viewModel.handleEvent(HomeContract.HomeEvent.SendInvitation(userId,username, homeId))
+            }
+        )
+    }
+
+    if (uiState.showEditDialogue) {
+        EditItemDialog(
+            onDismiss = { viewModel.handleEvent(HomeContract.HomeEvent.ClearEditDialogue) },
+            onItemEdit = { homeName ->
+                viewModel.handleEvent(HomeContract.HomeEvent.EditHome(homeName, homeId))
+            },
+            itemToEditWord = "Home"
+        )
+    }
 }
 
 @Composable
@@ -86,6 +131,7 @@ fun HomeContent(
     onUserClicked: (Any?) -> Unit = {},
     topBar: @Composable () -> Unit = {},
     bottomNavigationBar: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
     errorShown: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -94,6 +140,7 @@ fun HomeContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = topBar,
         bottomBar = bottomNavigationBar,
+        floatingActionButton = floatingActionButton,
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -127,7 +174,9 @@ fun HomeContent(
                 Spacer(modifier = Modifier.height(8.dp))
                 UsersListSmallCard(
                     users = members,
-                    onUserClicked = onUserClicked
+                    onUserClicked = {
+                        //should do nothing here
+                    }
                 )
             }
         }

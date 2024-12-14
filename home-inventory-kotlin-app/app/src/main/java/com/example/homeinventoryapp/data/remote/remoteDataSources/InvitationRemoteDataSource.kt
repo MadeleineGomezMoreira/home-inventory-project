@@ -1,10 +1,13 @@
 package com.example.homeinventoryapp.data.remote.remoteDataSources
 
 import com.example.homeinventoryapp.data.model.toInvitation
+import com.example.homeinventoryapp.data.model.toInvitationInfo
 import com.example.homeinventoryapp.data.model.toInvitationRequestCreate
 import com.example.homeinventoryapp.data.remote.BaseApiResponse
 import com.example.homeinventoryapp.data.remote.services.InvitationService
 import com.example.homeinventoryapp.domain.model.Invitation
+import com.example.homeinventoryapp.domain.model.InvitationInfo
+import com.example.homeinventoryapp.domain.model.InvitationToSend
 import com.example.homeinventoryapp.utils.Constants
 import com.example.homeinventoryapp.utils.NetworkResult
 import timber.log.Timber
@@ -13,6 +16,35 @@ import javax.inject.Inject
 class InvitationRemoteDataSource @Inject constructor(
     private val invitationService: InvitationService
 ) : BaseApiResponse() {
+
+    suspend fun getInvitationInfo(id: Int): NetworkResult<InvitationInfo> {
+        return try {
+            val result = safeApiCall { invitationService.getInvitationInfo(id) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.toInvitationInfo()?.let { NetworkResult.Success(it) }
+                        ?: NetworkResult.Error(Constants.RETRIEVING_INVITATION_INFO_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(
+                        result.message ?: Constants.EMPTY_MESSAGE,
+                        Constants.RETRIEVING_INVITATION_INFO_ERROR
+                    )
+                    NetworkResult.Error(
+                        result.message ?: Constants.RETRIEVING_INVITATION_INFO_ERROR
+                    )
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.RETRIEVING_INVITATION_INFO_ERROR)
+            NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
 
     suspend fun getInvitationsByUser(id: Int): NetworkResult<List<Invitation>> {
         return try {
@@ -46,7 +78,7 @@ class InvitationRemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun sendInvitation(invitation: Invitation): NetworkResult<Unit> {
+    suspend fun sendInvitation(invitation: InvitationToSend): NetworkResult<Unit> {
         return try {
             val result =
                 safeApiCall { invitationService.sendInvitation(invitation.toInvitationRequestCreate()) }

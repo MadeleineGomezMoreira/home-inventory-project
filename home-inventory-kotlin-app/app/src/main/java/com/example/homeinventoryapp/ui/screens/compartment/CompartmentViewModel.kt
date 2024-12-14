@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,8 +31,8 @@ class CompartmentViewModel @Inject constructor(
 
     fun handleEvent(event: CompartmentContract.CompartmentEvent) {
         when (event) {
-            is CompartmentContract.CompartmentEvent.getCompartment -> getCompartment(event.compId)
-            is CompartmentContract.CompartmentEvent.getCompartmentItems -> getItems(event.compId)
+            is CompartmentContract.CompartmentEvent.GetCompartment -> getCompartment(event.compId)
+            is CompartmentContract.CompartmentEvent.GetCompartmentItems -> getItems(event.compId)
             is CompartmentContract.CompartmentEvent.CreateItem -> createItem(
                 event.itemName,
                 event.compId,
@@ -55,6 +56,7 @@ class CompartmentViewModel @Inject constructor(
     }
 
     private fun createItem(itemName: String, compId: Int, tags: List<String>) {
+        Timber.d("createItem: $itemName, $compId, $tags")
         viewModelScope.launch {
             saveItem.invoke(
                 ItemDetail(

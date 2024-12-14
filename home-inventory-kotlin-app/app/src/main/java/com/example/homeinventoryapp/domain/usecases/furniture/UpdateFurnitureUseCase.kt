@@ -8,12 +8,12 @@ class UpdateFurnitureUseCase @Inject constructor(
     private val furnitureRepository: FurnitureRepository
 ) {
 
-    operator fun invoke(furnitureId: Int, furnitureName: String) =
+    operator fun invoke(furnitureId: Int, furnitureName: String, roomId: Int) =
         furnitureRepository.updateFurniture(
             Furniture(
                 id = furnitureId,
                 name = furnitureName,
-                roomId = 0
+                roomId = roomId
             )
         )
 

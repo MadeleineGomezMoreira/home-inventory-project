@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FolderCopy
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,6 +31,8 @@ import com.example.homeinventoryapp.ui.common.ClickableSmallCard
 import com.example.homeinventoryapp.ui.common.CreateItemDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.EditItemDialog
+import com.example.homeinventoryapp.ui.common.FloatingActionMenuAddEdit
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
@@ -61,7 +60,7 @@ fun FurnitureScreen(
 
     if (uiState.showCreateDialogue) {
         CreateItemDialog(
-            onDismiss = { viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearDialogue) },
+            onDismiss = { viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearCreateDialogue) },
             onItemCreate = { compName ->
                 viewModel.handleEvent(
                     FurnitureContract.FurnitureEvent.CreateCompartment(
@@ -69,9 +68,23 @@ fun FurnitureScreen(
                         furnId
                     )
                 )
-                viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearDialogue)
+                viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearCreateDialogue)
             },
             itemToCreateWord = "Compartment"
+        )
+    }
+
+    if (uiState.showEditDialogue) {
+        EditItemDialog(
+            onDismiss = { viewModel.handleEvent(FurnitureContract.FurnitureEvent.ClearEditDialogue) },
+            onItemEdit = { itemName ->
+                viewModel.handleEvent(
+                    FurnitureContract.FurnitureEvent.EditFurniture(
+                        itemName, furnId, uiState.furniture?.roomId ?: 0
+                    )
+                )
+            },
+            itemToEditWord = "Furniture"
         )
     }
 
@@ -87,13 +100,14 @@ fun FurnitureScreen(
             viewModel.handleEvent(FurnitureContract.FurnitureEvent.CompartmentClicked(compartment as Compartment))
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.handleEvent(FurnitureContract.FurnitureEvent.ShowDialogue)
+            FloatingActionMenuAddEdit(
+                onAddElementClicked = {
+                    viewModel.handleEvent(FurnitureContract.FurnitureEvent.ShowCreateDialogue)
+                },
+                onEditElementClicked = {
+                    viewModel.handleEvent(FurnitureContract.FurnitureEvent.ShowEditDialogue)
                 }
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add compartment")
-            }
+            )
         }
 
     )
@@ -139,7 +153,7 @@ fun FurnitureContent(
                     onCompartmentClicked = onCompartmentClicked
                 )
             } else {
-                Text(text = "No furniture added yet")
+                Text(text = "No compartments added yet")
             }
             ShowSnackbarMessage(message = error, snackbarHostState = snackbarHostState) {
                 errorShown()

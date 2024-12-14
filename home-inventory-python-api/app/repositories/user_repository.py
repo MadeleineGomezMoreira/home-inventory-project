@@ -1,11 +1,6 @@
 from app.models.models import (
     User,
     UserHome,
-    Furniture,
-    Invitation,
-    Home,
-    Room,
-    Compartment,
 )
 import bcrypt
 from app.schemas.user import UserCreate, UserResponse, UsersByRoleResponse, UserRequestLogin
@@ -13,18 +8,19 @@ from app.mappers.user_mapper import map_userCreate_to_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from app.exceptions.custom_exceptions import(
-    ActivationCodeExpiredError,
-    InvalidActivationCodeError,
-    UserNotFoundError, 
-    UserNotActivatedError, 
-    AccountAlreadyActivatedError, 
+    ActivationCodeExpiredException,
+    InvalidActivationCodeException,
+    UserNotFoundException, 
+    UserNotActivatedException, 
+    AccountAlreadyActivatedException, 
     MailMessagingException,
-    WrongUserCredentialsError
+    UserUpdatingException,
+    WrongUserCredentialsException,
+    SavingUserException,
 ) 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
-from email import encoders
 from urllib.parse import unquote
 import urllib.parse
 import smtplib
@@ -34,8 +30,8 @@ import base64
 import datetime
 from datetime import timedelta
 
-EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS')
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS', "alumnosdamquevedo@gmail.com")
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', "uyhqfbbfmszvuykt")
 
 # Constants (replace these with actual values)
 CLICK_LINK_TO_ACTIVATE_ACCOUNT = "Click the link to activate your account: "
@@ -45,29 +41,55 @@ CODE_URL = "&code="
 ACTIVATE_YOUR_ACCOUNT_MAIL_SUBJECT = "Activate Your Account"
 FAILED_TO_SEND_EMAIL_ERROR = "Failed to send email."
 
-
-# Save a new user
 async def save_user(session: AsyncSession, user: UserCreate):
-    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-
-    # Map the user schema to the User model
-    mapped_user = map_userCreate_to_user(user)
+    """
+    Saves a new user in the database with hashed password and sends an activation email.
+    - Hashes the password and stores it in the database.
+    - Sends an email with an activation link to the user's email.
     
-    # Set the hashed password in the User model
-    mapped_user.password = hashed_password.decode('utf-8')  # Store as string
-    session.add(mapped_user)
+    Args:
+        session (`AsyncSession`) - The database session to interact with the database.
+        user (`UserCreate`) - The schema object containing user information for creation.
 
-    # Send the activation email to the user
-    await send_email(session, user.email)
+    Returns:
+        `User`: The newly created user object.
 
-    await session.commit()
-    await session.refresh(mapped_user)
+    Raises:
+        `MailMessagingException`: If there's an issue sending the activation email.
+    """
+    try: 
+        hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
 
-    return mapped_user
+        mapped_user = map_userCreate_to_user(user)
+    
+        mapped_user.password = hashed_password.decode('utf-8')
+        session.add(mapped_user)
+
+        await send_email(session, user.email)
+
+        await session.commit()
+        await session.refresh(mapped_user)
+
+        return mapped_user
+    except Exception as e:
+        await session.rollback()
+        raise SavingUserException(e) from e
 
 
-# Get all users from a home grouped by role
 async def get_all_users_by_home_by_role(session: AsyncSession, home_id: int):
+    """
+    Retrieves all users from a specific home, grouped by their role (OWNER or MEMBER).
+
+    Args:
+        session (`AsyncSession`) - The database session to interact with the database.
+        home_id (`int`): The ID of the home to fetch users for.
+
+    Returns:
+        `UsersByRoleResponse`: A response object containing the users, grouped by role.
+
+    Raises:
+        `UserNotFoundException`: If no users are found for the given home ID.
+    """
     stmt = (
         select(User, UserHome.role)
         .join(UserHome)
@@ -90,164 +112,279 @@ async def get_all_users_by_home_by_role(session: AsyncSession, home_id: int):
         elif role == "MEMBER":
             users_by_role["MEMBER"].append(user_response)
 
-    print(users_by_role)
-
     return UsersByRoleResponse(
         OWNER=users_by_role["OWNER"], MEMBER=users_by_role["MEMBER"]
     )
 
-
-# Delete an existing user by user.id, including furniture and compartments
 async def delete_user(session: AsyncSession, user_id: int):
-    # Fetch the user to delete
+    """
+    Deletes a user from the database, along with their associated furniture and compartments.
+
+    Args:
+        session (`AsyncSession`) - The database session to interact with the database.
+        user_id (`int`) - The ID of the user to delete.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given ID.
+    """
     user = await session.get(User, user_id)
 
-    if user is None:
-        raise UserNotFoundError(f"User with ID {user_id} not found")
+    if not user:
+        raise UserNotFoundException()
 
-    # Delete the user
     await session.execute(delete(User).where(User.id == user_id))
-
-
-# Update an existing user (works the same as save)
-async def update_user(session: AsyncSession, user: UserCreate):
-    mapped_user = map_userCreate_to_user(user)
-    session.add(mapped_user)
     await session.commit()
 
 
-# Find all users
+async def update_user(session: AsyncSession, user: UserCreate):
+    """
+    Updates an existing user's information in the database.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        user: `UserCreate` - The schema object containing user information for update.
+
+    Raises:
+        UserUpdatingException: If an error occurs while updating the user.
+    """
+    try:
+        mapped_user = map_userCreate_to_user(user)
+        session.add(mapped_user)
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        raise UserUpdatingException(e) from e
+
+
 async def get_all_users(session: AsyncSession):
+    """
+    Retrieves all users from the database.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+
+    Returns:
+        List[`User`]: A list of all user objects in the database.
+    """
     result = await session.execute(select(User))
     return result.scalars().all()
 
 
-# Find a user by user_id
 async def get_user_by_id(session: AsyncSession, user_id: int):
+    """
+    Retrieves a user from the database by their ID.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        user_id (`int`): The ID of the user to fetch.
+
+    Returns:
+        `User`: The user object with the given ID.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given ID.
+    """
     stmt = select(User).where(User.id == user_id)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    user = result.scalar_one_or_none()
+    if not user:
+        raise UserNotFoundException()
+    return user
 
 
-# Find a user by username
 async def get_user_by_username(session: AsyncSession, username: str):
+    """
+    Retrieves a user from the database by their username.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        username (`str`): The username of the user to fetch.
+
+    Returns:
+        `User`: The user object with the given username.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given username.
+    """
     stmt = select(User).where(User.username == username)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    user = result.scalar_one_or_none()
+    if not user:
+        raise UserNotFoundException()
+    return user
 
-# Find a user by email
 async def get_user_by_email(session: AsyncSession, email: str):
+    """
+    Retrieves a user from the database by their email address.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        email (`str`): The email address of the user to fetch.
+
+    Returns:
+        `User`: The user object with the given email.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given email.
+    """
     stmt = select(User).where(User.email == email)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    user = result.scalar_one_or_none()
+    if not user:
+        raise UserNotFoundException()
+    return user
 
-# Activate user account
 async def activate_user_account(session: AsyncSession, email: str, activation_code: str):
-    # Fetch the user by email
+    """
+    Activates a user's account using the provided activation code.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        email (`str`): The email address of the user to activate.
+        activation_code (`str`): The activation code provided for account activation.
+
+    Returns:
+        `bool`: True if the account was successfully activated.
+
+    Raises:
+        `ActivationCodeExpiredException`: If the activation code has expired.
+        `InvalidActivationCodeException`: If the provided activation code is invalid.
+        `UserNotFoundException`: If the user cannot be found for the given email.
+    """
     user = await get_user_by_email(session, email)
-
-    print(f"ACTIVATION CODE (NOT DECODED) -> {activation_code}")
     
-    if user is None:
-        raise UserNotFoundError(f"User with email {email} not found")
+    if not user:
+        raise UserNotFoundException(f"User with email {email} not found")
 
-    # Check if account is already activated
     if user.activated:
-        raise AccountAlreadyActivatedError(f"User with email {email} is already activated")
+        raise AccountAlreadyActivatedException(f"User with email {email} is already activated")
 
-    # Decode both activation codes
     decoded_activation_code = unquote(activation_code)
     stored_activation_code = unquote(user.activation_code)
     
-    # Check if activation code is expired (plus 2 hours for MySQL time difference)
     activation_date = user.activation_date + datetime.timedelta(hours=2)
     expiration_time = activation_date + datetime.timedelta(minutes=5)
     
     if expiration_time < datetime.datetime.now():
-        #check if this works
         await send_email(session, email)
-        raise ActivationCodeExpiredError("The code used to activate the account is expired. A new link was just sent to your email")
+        raise ActivationCodeExpiredException("The code used to activate the account is expired. A new link was just sent to your email")
     
-    # If the activation code is correct and not expired, activate the account
-    print(f"DECODED ACTIVATION CODE -> {decoded_activation_code} | USER CODE -> {stored_activation_code}")
     if decoded_activation_code == stored_activation_code:
         user.activated = True
         await session.commit()
-        return True  # Account activated
+        return True
     
-    raise InvalidActivationCodeError("The code used to activate the account is not valid")
+    raise InvalidActivationCodeException()
 
-# Login by inputting username and password
 async def login_by_user_password(session: AsyncSession, user_login: UserRequestLogin):
+    """
+    Authenticates a user using their username and password.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        user_login (`UserRequestLogin`): The login request containing username and password.
+
+    Returns:
+        int: The user ID if login is successful.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given username.
+        `UserNotActivatedException`: If the user's account is not activated.
+        `WrongUserCredentialsException`: If the provided password is incorrect.
+    """
     user = await get_user_by_username(session, user_login.username)
-    print(F"USER ACTIVATION EQUALS: {user.activated}")
+    if not user:
+        raise UserNotFoundException()
     if(user.activated == False):
-        raise UserNotActivatedError(f"User with username {user_login.username} is not activated. Please activate your account through the link sent to your email")
+        raise UserNotActivatedException()
     elif(verify_password(user.password, user_login.password)):
         return user.id
     else:
-        raise WrongUserCredentialsError(f"The password is incorrect. Try again.")
+        raise WrongUserCredentialsException()
 
-# Async function to update activation code in the database
 async def update_activation_code(session: AsyncSession, recipient: str, activation_code: str):
+    """
+    Updates the activation code for a user.
+
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        recipient (`str`): The email address of the user to update.
+        activation_code (`str`): The new activation code to set for the user.
+
+    Raises:
+        `UserNotFoundException`: If no user is found for the given email address.
+
+    Returns:
+        `str`: The updated activation code.
+    """
     user = await get_user_by_email(session, recipient)
-    if user:
-        user.activation_code = activation_code 
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-        return user.activation_code
+    if not user:
+        raise UserNotFoundException()
+    user.activation_code = activation_code 
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user.activation_code
 
 def verify_password(stored_hash: str, input_password: str) -> bool:
+    """
+    Verifies if the provided password matches the stored hash.
+
+    Args:
+        stored_hash (`str`): The stored hashed password.
+        input_password (`str`): The input password to verify.
+
+    Returns:
+        `bool`: True if the passwords match, False otherwise.
+    """
     return bcrypt.checkpw(input_password.encode('utf-8'), stored_hash.encode('utf-8'))
 
 def generate_activation_code() -> str:
-    # Generate 32 random bytes
+    """
+    Generates a new random activation code.
+
+    Returns:
+        `str`: The generated activation code.
+    """
     random_bytes = secrets.token_bytes(32)
-    
-    # Base64 encode the random bytes
     encoded_activation_code = base64.b64encode(random_bytes).decode('utf-8')
-    
-    # URL-encode the Base64 string
     url_encoded_activation_code = urllib.parse.quote(encoded_activation_code, safe='')
-    
     return url_encoded_activation_code
 
-
-# Function to send the email
 async def send_email(session: AsyncSession, recipient: str):
-    try:
-        # Generate activation code
-        activation_code = generate_activation_code()
+    """
+    Sends an activation email to the user with a generated activation code.
 
-        # Update the activation code in the database
+    Args:
+        session (`AsyncSession`): The database session to interact with the database.
+        recipient (`str`): The email address of the user to send the activation email to.
+
+    Raises:
+        `MailMessagingException`: If there's an issue sending the activation email.
+    """
+    try:
+        activation_code = generate_activation_code()
         new_code = await update_activation_code(session, recipient, activation_code)
 
-        # Construct the activation link message
         message = f"{CLICK_LINK_TO_ACTIVATE_ACCOUNT} {ACTIVATE_ACCOUNT_LINK}{EMAIL_URL}{recipient}{CODE_URL}{new_code}"
 
-        # Set up the email server and send the email
         sender_email = EMAIL_ADDRESS
         receiver_email = recipient
         password = EMAIL_PASSWORD
 
-        # Create the email message
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = ACTIVATE_YOUR_ACCOUNT_MAIL_SUBJECT
         msg.attach(MIMEText(message, 'plain'))
 
-        # Set up the server and send the email
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
                 server.login(sender_email, password)
                 server.sendmail(sender_email, receiver_email, msg.as_string())
         except Exception as e:
-            print(f"Error in send_email function: {e}")  # Debugging line
             raise MailMessagingException(FAILED_TO_SEND_EMAIL_ERROR) from e
 
     except Exception as e:
-        çprint(f"Error in send_email function: {e}")  # Debugging line
         raise MailMessagingException(FAILED_TO_SEND_EMAIL_ERROR) from e

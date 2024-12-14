@@ -2,43 +2,94 @@ from app.models.models import (
     Home,
     UserHome,
     UserRole,
-    Room,
-    Invitation,
-    Furniture,
-    Compartment,
-    Item,
-    Tag,
 )
 from app.schemas.home import HomeCreate, HomeRequest, HomeResponse, HomesByRoleResponse
 from app.mappers.home_mapper import map_homeCreate_to_home
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select
-from app.exceptions.custom_exceptions import HomeNotFoundError, UserNotInHomeException
-
-# TODO: implement error handling
-
-
-# Save a new home
-async def save_home(session: AsyncSession, home: HomeCreate):
-    mapped_home = map_homeCreate_to_home(home)
-    session.add(mapped_home)
-    await session.commit()
-    await session.refresh(mapped_home)
-
-    user_home = UserHome(
-        user_id=mapped_home.owned_by, home_id=mapped_home.id, role=UserRole.OWNER.value
+from app.exceptions.custom_exceptions import (
+    HomeDeletionException,
+    HomeNotFoundException,
+    HomeUpdatingException,
+    MemberRemovalException,
+    SavingHomeException,
+    UserNotFoundException, 
+    UserNotInHomeException
     )
 
-    session.add(user_home)
-    await session.commit()
-    await session.refresh(mapped_home)
-    await session.refresh(user_home)
+async def get_is_user_owner(session: AsyncSession, user_id: int, home_id: int):
+    """
+    Retrieve a boolean that shows if a user is the owner of a specific home.
 
-    return mapped_home
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        user_id (`int`): The ID of the user to check ownership.
+        home_id (`int`): The ID of the home to check ownership for.
+
+    Raises:
+        `UserNotFoundException`: If the user is not found in the specified home.
+
+    Returns:
+        `bool`: True if the user is the owner of the home, False otherwise.
+    """
+    stmt = select(UserHome.role).where(
+        UserHome.user_id == user_id,
+        UserHome.home_id == home_id,
+    )
+
+    result = await session.execute(stmt)
+
+    role: UserRole = result.scalar_one_or_none()
+    
+    if not role:
+        raise UserNotFoundException()
+    
+    is_owner = role == 'OWNER'
+    return is_owner
+
+async def save_home(session: AsyncSession, home: HomeCreate):
+    """
+    Save a new home and assign the owner.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        home (`HomeCreate`): The data for the new home to be created.
+
+    Raises:
+        `SavingHomeException`: If an error occurs while saving the home.
+
+    Returns:
+        `Home`: The newly created home object.
+    """
+    try:
+        mapped_home = map_homeCreate_to_home(home)
+        session.add(mapped_home)
+        await session.commit()
+        await session.refresh(mapped_home)
+
+        user_home = UserHome(
+            user_id=mapped_home.owned_by, home_id=mapped_home.id, role=UserRole.OWNER.value
+        )
+
+        session.add(user_home)
+        await session.commit()
+        await session.refresh(mapped_home)
+        await session.refresh(user_home)
+
+        return mapped_home
+    except Exception as e:
+        raise SavingHomeException(e) from e
 
 
-# Join a home as a member
 async def join_home_as_member(session: AsyncSession, user_id: int, home_id: int):
+    """
+    Add a user as a member to a specific home.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        user_id (`int`): The ID of the user to be added as a member.
+        home_id (`int`): The ID of the home to add the user to.
+    """
     user_home = UserHome(user_id=user_id, home_id=home_id, role=UserRole.MEMBER.value)
     session.add(user_home)
     await session.commit()
@@ -46,61 +97,120 @@ async def join_home_as_member(session: AsyncSession, user_id: int, home_id: int)
     return None
 
 
-# Update an existing home
 async def update_home(session: AsyncSession, home_request: HomeRequest):
-    existing_home = await session.get(Home, home_request.id)
+    """
+    Update an existing home.
 
-    if existing_home is None:
-        raise HomeNotFoundError("Home was not found")
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        home_request (`HomeRequest`): The data for the home update.
 
-    existing_home.home_name = home_request.home_name
+    Raises:
+        `HomeNotFoundException`: If the home is not found.
+        `HomeUpdatingException`: If an error occurs while updating the home.
 
-    await session.commit()
-    await session.refresh(existing_home)
+    Returns:
+        `Home`: The updated home object.
+    """
+    try: 
+        existing_home = await session.get(Home, home_request.id)
 
-    return existing_home
+        if not existing_home:
+            raise HomeNotFoundException()
 
+        existing_home.home_name = home_request.home_name
 
-# Delete an existing home along with its related furniture and compartments
+        await session.commit()
+        await session.refresh(existing_home)
+
+        return existing_home
+    except Exception as e:
+        await session.rollback()
+        raise HomeUpdatingException(e) from e
+    
 async def delete_home(session: AsyncSession, home_id: int):
-    async with session.begin():
-        # Retrieve the home object from the database
+    """
+    Delete an existing home and its associated data.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        home_id (`int`): The ID of the home to be deleted.
+
+    Raises:
+        `HomeNotFoundException`: If the specified home is not found.
+        `HomeDeletionException`: If an error occurs during the deletion process.
+    """
+    try:
         home = await session.get(Home, home_id)
 
         if home is None:
-            raise HomeNotFoundError("Home was not found")
-
-        # Delete the home
+            raise HomeNotFoundException("Home was not found")
+        
         await session.execute(delete(Home).where(Home.id == home_id))
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        raise HomeDeletionException(e) from e
 
 
-# Remove a user from a home
 async def remove_user_from_home(session: AsyncSession, home_id: int, user_id: int):
-    stmt = select(UserHome).where(
-        UserHome.user_id == user_id,
-        UserHome.home_id == home_id,
-        UserHome.role == UserRole.MEMBER.value,
-    )
+    """
+    Remove a user from a home.
 
-    result = await session.execute(stmt)
-    user_home = result.scalar_one_or_none()
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        home_id (`int`): The ID of the home from which the user will be removed.
+        user_id (`int`): The ID of the user to be removed from the home.
 
-    if not user_home:
-        raise UserNotInHomeException("User is not a member of the specified home.")
+    Raises:
+        `UserNotInHomeException`: If the user is not part of the home.
+        `MemberRemovalException`: If an error occurs while removing the user.
+    """
+    try:
+        stmt = select(UserHome).where(
+            UserHome.user_id == user_id,
+            UserHome.home_id == home_id,
+            UserHome.role == UserRole.MEMBER.value,
+        )
 
-    # Delete the UserHome record if found
-    await session.delete(user_home)
-    await session.commit()
+        result = await session.execute(stmt)
+        user_home = result.scalar_one_or_none()
+
+        if not user_home:
+            raise UserNotInHomeException()
+
+        await session.delete(user_home)
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        raise MemberRemovalException(e) from e
 
 
-# Find all homes
 async def get_all_homes(session: AsyncSession):
+    """
+    Retrieve all homes from the database.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+
+    Returns:
+        list[`Home`]: A list of all home objects.
+    """
     result = await session.execute(select(Home))
     return result.scalars().all()
 
 
-# Find all homes by user (users_homes table)
 async def get_all_homes_by_user_by_role(session: AsyncSession, user_id: int):
+    """
+    Retrieve all homes a user is associated with, categorized by role.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        user_id (`int`): The ID of the user whose homes are to be retrieved.
+
+    Returns:
+        `HomesByRoleResponse`: A response containing lists of homes by role (OWNER, MEMBER).
+    """
     stmt = (
         select(Home, UserHome.role)
         .join(UserHome)
@@ -120,15 +230,28 @@ async def get_all_homes_by_user_by_role(session: AsyncSession, user_id: int):
         )
         homes_by_role[role].append(home_response)
 
-    print(homes_by_role)
-
     return HomesByRoleResponse(
         OWNER=homes_by_role["OWNER"], MEMBER=homes_by_role["MEMBER"]
     )
 
 
-# Find a home by home_id
 async def get_home_by_id(session: AsyncSession, home_id: int):
+    """
+    Retrieve a home by its ID.
+
+    Args:
+        session (`AsyncSession`): The database session used to execute the query.
+        home_id (`int`): The ID of the home to be retrieved.
+
+    Raises:
+        `HomeNotFoundException`: If no home exists with the given ID.
+
+    Returns:
+        `Home`: The home object corresponding to the provided ID.
+    """
     stmt = select(Home).where(Home.id == home_id)
     result = await session.execute(stmt)
-    return result.scalars().first()
+    home = result.scalar_one_or_none()
+    if not home:
+        raise HomeNotFoundException()
+    return home

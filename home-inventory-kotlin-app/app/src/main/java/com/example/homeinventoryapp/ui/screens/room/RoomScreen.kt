@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chair
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,9 +31,12 @@ import com.example.homeinventoryapp.ui.common.ClickableSmallCard
 import com.example.homeinventoryapp.ui.common.CreateItemDialog
 import com.example.homeinventoryapp.ui.common.CustomTextBold
 import com.example.homeinventoryapp.ui.common.DefaultIcon
+import com.example.homeinventoryapp.ui.common.EditItemDialog
+import com.example.homeinventoryapp.ui.common.FloatingActionMenuAddEdit
 import com.example.homeinventoryapp.ui.common.ListSmallCard
 import com.example.homeinventoryapp.ui.common.LoadingProgressComponent
 import com.example.homeinventoryapp.ui.common.ShowSnackbarMessage
+import com.example.homeinventoryapp.ui.common.di.UserSession
 import timber.log.Timber
 
 @Composable
@@ -48,6 +48,7 @@ fun RoomScreen(
     roomId: Int,
 ) {
     val uiState by viewModel.state.collectAsState()
+    val homeId = UserSession.homeId ?: 0
 
     LaunchedEffect(roomId) {
         viewModel.handleEvent(RoomContract.RoomEvent.GetRoom(roomId))
@@ -75,25 +76,38 @@ fun RoomScreen(
             viewModel.handleEvent(RoomContract.RoomEvent.FurnitureClicked(furniture as Furniture))
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.handleEvent(RoomContract.RoomEvent.ShowDialogue)
-                }
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Furniture")
-            }
+            FloatingActionMenuAddEdit(
+                onAddElementClicked = {
+                    viewModel.handleEvent(RoomContract.RoomEvent.ShowCreateDialogue)
+                },
+                onEditElementClicked = {
+                    viewModel.handleEvent(RoomContract.RoomEvent.ShowEditDialogue)
+                },
+            )
         }
     )
     if (uiState.showCreateDialogue) {
         CreateItemDialog(
-            onDismiss = { viewModel.handleEvent(RoomContract.RoomEvent.ClearDialogue) },
+            onDismiss = { viewModel.handleEvent(RoomContract.RoomEvent.ClearCreateDialogue) },
             onItemCreate = { furnitureName ->
                 viewModel.handleEvent(RoomContract.RoomEvent.CreateFurniture(furnitureName, roomId))
-                viewModel.handleEvent(RoomContract.RoomEvent.ClearDialogue)
+                viewModel.handleEvent(RoomContract.RoomEvent.ClearCreateDialogue)
             },
             itemToCreateWord = "Furniture"
         )
     }
+    if (uiState.showEditDialogue) {
+        EditItemDialog(
+            onDismiss = { viewModel.handleEvent(RoomContract.RoomEvent.ClearEditDialogue) },
+            onItemEdit = { roomName ->
+                viewModel.handleEvent(RoomContract.RoomEvent.EditRoom(roomName, roomId, homeId))
+                viewModel.handleEvent(RoomContract.RoomEvent.ClearEditDialogue)
+            },
+            itemToEditWord = "Room",
+
+        )
+    }
+
 }
 
 @Composable

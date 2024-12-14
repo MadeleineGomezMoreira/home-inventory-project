@@ -15,8 +15,8 @@ class CompartmentContract {
     )
 
     sealed class CompartmentEvent {
-        data class getCompartment(val compId: Int) : CompartmentEvent()
-        data class getCompartmentItems(val compId: Int) : CompartmentEvent()
+        data class GetCompartment(val compId: Int) : CompartmentEvent()
+        data class GetCompartmentItems(val compId: Int) : CompartmentEvent()
         data class CreateItem(val itemName: String, val compId: Int, val tags: List<String>) :
             CompartmentEvent()
 

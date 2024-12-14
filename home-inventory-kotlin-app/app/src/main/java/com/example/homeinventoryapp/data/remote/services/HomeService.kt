@@ -18,6 +18,12 @@ interface HomeService {
     @GET(Constants.GET_HOMES_BY_USER_PATH)
     suspend fun getHomesByUser(@Path(Constants.ID_PARAM) id: Int): Response<MyHomesResponse>
 
+    @GET(Constants.GET_HOME_OWNERSHIP_PATH)
+    suspend fun getHomeOwnership(
+        @Path(Constants.HOME_ID) homeId: Int,
+        @Path(Constants.USER_ID) userId: Int
+    ): Response<Boolean>
+
     @GET(Constants.GET_HOME_PATH)
     suspend fun getHome(@Path(Constants.ID_PARAM) id: Int): Response<HomeResponse>
 

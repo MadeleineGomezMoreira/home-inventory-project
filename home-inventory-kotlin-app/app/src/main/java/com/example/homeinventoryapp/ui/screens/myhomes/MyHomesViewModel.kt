@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,9 +83,10 @@ class MyHomesViewModel @Inject constructor(
                         is NetworkResult.Success -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
-                                ownerHomes = result.data?.ownedHomes ?: emptyList(),
                                 memberHomes = result.data?.memberHomes ?: emptyList(),
+                                ownerHomes = result.data?.ownedHomes ?: emptyList(),
                             )
+                            Timber.d("OWNED HOMES: ${_state.value.ownerHomes}, MEMBER HOMES: ${_state.value.memberHomes}")
                         }
 
                         is NetworkResult.Loading -> {

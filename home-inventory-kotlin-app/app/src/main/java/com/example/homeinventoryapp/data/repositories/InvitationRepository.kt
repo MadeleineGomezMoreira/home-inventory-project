@@ -2,6 +2,8 @@ package com.example.homeinventoryapp.data.repositories
 
 import com.example.homeinventoryapp.data.remote.remoteDataSources.InvitationRemoteDataSource
 import com.example.homeinventoryapp.domain.model.Invitation
+import com.example.homeinventoryapp.domain.model.InvitationInfo
+import com.example.homeinventoryapp.domain.model.InvitationToSend
 import com.example.homeinventoryapp.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +14,14 @@ import javax.inject.Inject
 class InvitationRepository @Inject constructor(
     private val invitationRemoteDataSource: InvitationRemoteDataSource
 ) {
+    fun getInvitationInfo(id: Int): Flow<NetworkResult<InvitationInfo>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = invitationRemoteDataSource.getInvitationInfo(id)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
     fun getInvitationsByUser(id: Int): Flow<NetworkResult<List<Invitation>>> {
         return flow {
             emit(NetworkResult.Loading())
@@ -20,7 +30,7 @@ class InvitationRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun sendInvitation(invitation: Invitation): Flow<NetworkResult<Unit>> {
+    fun sendInvitation(invitation: InvitationToSend): Flow<NetworkResult<Unit>> {
         return flow {
             emit(NetworkResult.Loading())
             val result = invitationRemoteDataSource.sendInvitation(invitation)

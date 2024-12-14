@@ -49,8 +49,8 @@ fun CompartmentScreen(
     val uiState by viewModel.state.collectAsState()
 
     LaunchedEffect(compId) {
-        viewModel.handleEvent(CompartmentContract.CompartmentEvent.getCompartment(compId))
-        viewModel.handleEvent(CompartmentContract.CompartmentEvent.getCompartmentItems(compId))
+        viewModel.handleEvent(CompartmentContract.CompartmentEvent.GetCompartment(compId))
+        viewModel.handleEvent(CompartmentContract.CompartmentEvent.GetCompartmentItems(compId))
     }
 
     if (uiState.itemId != null) {

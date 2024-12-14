@@ -122,6 +122,31 @@ class UserRemoteDataSource @Inject constructor(
         }
     }
 
+    suspend fun deleteUser(id: Int): NetworkResult<Unit> {
+        return try {
+            val result = safeApiCall { userService.deleteUser(id) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    NetworkResult.Success(Unit)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(result.message, Constants.DELETING_USER_ERROR)
+                    NetworkResult.Error(
+                        result.message ?: Constants.DELETING_USER_ERROR
+                    )
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.DELETING_USER_ERROR)
+            return NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
     suspend fun getUserById(id: Int): NetworkResult<User> {
         return try {
             val result = safeApiCall { userService.getUserById(id) }

@@ -10,17 +10,21 @@ class FurnitureContract {
         val compartmentId: Int? = null,
         val isLoading: Boolean = false,
         val error: String? = null,
-        val showCreateDialogue: Boolean = false
+        val showCreateDialogue: Boolean = false,
+        val showEditDialogue: Boolean = false,
     )
 
     sealed class FurnitureEvent {
         data class GetFurniture(val furnitureId: Int) : FurnitureEvent()
         data class GetFurnitureCompartments(val furnitureId: Int) : FurnitureEvent()
         data class CreateCompartment(val name: String, val furnId: Int) : FurnitureEvent()
+        data class EditFurniture(val furnitureName: String, val furnId: Int, val roomId: Int) : FurnitureEvent()
         data class CompartmentClicked(val compartment: Compartment) : FurnitureEvent()
         data object ErrorDisplayed : FurnitureEvent()
         data object ClearCompartment : FurnitureEvent()
-        data object ShowDialogue : FurnitureEvent()
-        data object ClearDialogue : FurnitureEvent()
+        data object ShowCreateDialogue : FurnitureEvent()
+        data object ClearCreateDialogue : FurnitureEvent()
+        data object ShowEditDialogue : FurnitureEvent()
+        data object ClearEditDialogue : FurnitureEvent()
     }
 }

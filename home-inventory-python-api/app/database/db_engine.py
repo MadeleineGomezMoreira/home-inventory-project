@@ -4,7 +4,7 @@ from app.models.base import Base
 from sqlalchemy import text
 import os
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DATABASE_URL', "mysql+aiomysql://root:quevedo2dam@dam2.mysql.iesquevedo.es:3335/madegomez_TFG")
 
 
 engine = create_async_engine(

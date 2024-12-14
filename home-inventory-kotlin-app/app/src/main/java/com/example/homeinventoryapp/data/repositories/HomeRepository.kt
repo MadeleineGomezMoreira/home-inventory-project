@@ -14,6 +14,14 @@ class HomeRepository @Inject constructor(
     private val homeRemoteDataSource: HomeRemoteDataSource,
 ) {
 
+    fun getHomeOwnership(homeId: Int, userId: Int): Flow<NetworkResult<Boolean>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = homeRemoteDataSource.getHomeOwnership(homeId, userId)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
     fun getHome(id: Int): Flow<NetworkResult<Home>> {
         return flow {
             emit(NetworkResult.Loading())

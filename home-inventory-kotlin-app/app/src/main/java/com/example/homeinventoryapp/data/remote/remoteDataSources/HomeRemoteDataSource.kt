@@ -17,6 +17,34 @@ class HomeRemoteDataSource @Inject constructor(
     private val homeService: HomeService
 ) : BaseApiResponse() {
 
+    suspend fun getHomeOwnership(homeId: Int, userId: Int): NetworkResult<Boolean> {
+        return try {
+            val result = safeApiCall { homeService.getHomeOwnership(homeId, userId) }
+            when (result) {
+                is NetworkResult.Success -> {
+                    result.data?.let {
+                        NetworkResult.Success(it)
+                    } ?: NetworkResult.Error(Constants.RETRIEVING_HOME_OWNERSHIP_ERROR)
+                }
+
+                is NetworkResult.Error -> {
+                    Timber.i(
+                        result.message ?: Constants.EMPTY_MESSAGE,
+                        Constants.RETRIEVING_HOME_OWNERSHIP_ERROR
+                    )
+                    NetworkResult.Error(result.message ?: Constants.RETRIEVING_HOME_OWNERSHIP_ERROR)
+                }
+
+                is NetworkResult.Loading -> {
+                    NetworkResult.Loading()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, Constants.RETRIEVING_HOME_OWNERSHIP_ERROR)
+            NetworkResult.Error(e.message ?: e.toString())
+        }
+    }
+
     suspend fun getHome(id: Int): NetworkResult<Home> {
         return try {
             val result = safeApiCall { homeService.getHome(id) }

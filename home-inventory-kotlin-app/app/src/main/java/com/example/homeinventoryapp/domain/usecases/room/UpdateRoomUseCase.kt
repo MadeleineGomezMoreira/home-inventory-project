@@ -8,11 +8,11 @@ class UpdateRoomUseCase @Inject constructor(
     private val roomRepository: RoomRepository
 ) {
 
-    operator fun invoke(roomId: Int, roomName: String) = roomRepository.updateRoom(
+    operator fun invoke(roomId: Int, roomName: String, homeId: Int) = roomRepository.updateRoom(
         Room(
             id = roomId,
             name = roomName,
-            homeId = 0
+            homeId = homeId
         )
     )
 

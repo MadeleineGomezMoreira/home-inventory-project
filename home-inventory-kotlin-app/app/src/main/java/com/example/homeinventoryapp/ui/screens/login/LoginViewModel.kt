@@ -46,6 +46,7 @@ class LoginViewModel @Inject constructor(
                         is NetworkResult.Success -> {
                             _state.value = _state.value.copy(
                                 userId = result.data,
+                                isLoading = false
                             )
                         }
 

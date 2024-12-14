@@ -1,6 +1,7 @@
 package com.example.homeinventoryapp.data.remote.services
 
 import com.example.homeinventoryapp.data.model.item.ItemDetailResponse
+import com.example.homeinventoryapp.data.model.item.ItemMoveRequest
 import com.example.homeinventoryapp.data.model.item.ItemRequestCreate
 import com.example.homeinventoryapp.data.model.item.ItemRequestUpdate
 import com.example.homeinventoryapp.data.model.item.ItemResponse
@@ -41,5 +42,7 @@ interface ItemService {
     @GET(Constants.GET_ITEM_ROUTE_PATH)
     suspend fun getItemRoute(@Path(Constants.ID_PARAM) id: Int): Response<String>
 
+    @PUT(Constants.MOVE_ITEM_ROUTE_PATH)
+    suspend fun moveItem(@Body item: ItemMoveRequest): Response<Unit>
 
 }

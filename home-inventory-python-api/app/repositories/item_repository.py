@@ -1,28 +1,81 @@
 from app.models.models import Item, Tag, Compartment, Furniture, Room
-from app.schemas.item import ItemCreate, ItemRequest
+from app.schemas.item import ItemCreate, ItemRequest, ItemMoveRequest
 from app.mappers.item_mapper import map_itemCreate_to_item
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy import func, select, delete, union
-from app.exceptions.custom_exceptions import ItemNotFoundError, CompartmentNotFoundError
+from app.exceptions.custom_exceptions import (
+    ItemNotFoundException, 
+    CompartmentNotFoundException,
+    ItemMovementBetweenHomesNotAllowed,
+    ItemUpdatingException,
+    UnspecifiedHomeIdException,
+)
 
-
-# Retrieve all items from a compartment
 async def get_items_from_compartment(session: AsyncSession, comp_id: int):
+    """
+    Retrieves all items in the specified compartment.
+    
+    Args:
+        session (`AsyncSession`): The database session.
+        comp_id (`int`): The ID of the compartment.
+
+    Raises:
+        `ItemNotFoundException`: If no items are found in the compartment.
+
+    Returns:
+        List[`Item`]: A list of items found in the compartment.
+    """
     stmt = select(Item).where(Item.comp_id == comp_id)
     result = await session.execute(stmt)
-    return result.scalars().all()
+    
+    items = result.scalars().all()
+    
+    if not items:
+        raise ItemNotFoundException()
+    
+    return
 
-
-# Retrieve a single item
 async def get_item(session: AsyncSession, item_id: int):
+    """
+    Retrieves a single item based on its ID.
+
+    Args:
+        session (`AsyncSession`): The database session.
+        item_id (`int`): The ID of the item.
+
+    Raises:
+        `ItemNotFoundException`: If the item is not found.
+
+    Returns:
+        `Item`: The item object.
+    """
     stmt = select(Item).where(Item.id == item_id)
     result = await session.execute(stmt)
-    return result.scalar_one_or_none()
+    
+    item = result.scalar_one_or_none()
+    
+    if not item:
+        raise ItemNotFoundException()
+    
+    return item
 
 
-# Retrieve item route
 async def get_route(session: AsyncSession, item_id: int):
+    """
+    Retrieves the full route of an item through its relationships
+    (Home > Room > Furniture > Compartment).
+
+    Args:
+        session (`AsyncSession`): The database session.
+        item_id (`int`): The ID of the item.
+
+    Raises:
+        `ItemNotFoundException`: If the item is not found.
+
+    Returns:
+        `str`: The full route of the item.
+    """
     stmt = (
         select(Item)
         .options(
@@ -37,9 +90,8 @@ async def get_route(session: AsyncSession, item_id: int):
     item = result.scalar_one_or_none()
 
     if not item:
-        raise ItemNotFoundError(f"Item with id {item_id} not found.")
+        raise ItemNotFoundException()
 
-    # Extract the names of the related entities
     compartment_name = (
         item.compartment.comp_name if item.compartment else "Unknown Compartment"
     )
@@ -64,19 +116,26 @@ async def get_route(session: AsyncSession, item_id: int):
         else "Unknown Home"
     )
 
-    # Combine the names into the desired route string
     route = f"{home_name}/{room_name}/{furniture_name}/{compartment_name}"
 
     return route
 
 
-# Retrieve item by name and tag
 async def get_items_by_string(session: AsyncSession, search_string: str, home_id: int):
+    """
+    Retrieves items by searching for a string in item names or associated tags
+    within a specific home.
 
+    Args:
+        session (`AsyncSession`): The database session.
+        search_string (`str`): The search keyword.
+        home_id (`int`): The ID of the home.
+
+    Returns:
+        List[`Item`]: A list of items matching the search criteria.
+    """
     search_pattern = f"%{search_string.lower()}%"
-    print(f"SEARCH-PATTERN: {search_pattern}")
 
-    # Query items by name
     items_in_home_by_name = (
         select(Item)
         .join(Item.compartment)
@@ -86,7 +145,6 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .where(func.lower(Item.item_name).ilike(search_pattern))
     )
 
-    # Query items by tag
     items_in_home_by_tag = (
         select(Item)
         .join(Item.compartment)
@@ -97,86 +155,100 @@ async def get_items_by_string(session: AsyncSession, search_string: str, home_id
         .where(func.lower(Tag.tag_name).ilike(search_pattern))
     )
 
-    # Combine both queries using UNION
     combined_query = union(items_in_home_by_name, items_in_home_by_tag)
 
-    # Execute the combined query
     result = await session.execute(combined_query.options(selectinload(Item.tags)))
 
     items = result.fetchall()
 
-    # Retrieve and return items
     return items
 
 
-# Update item (change name /+ add tags-delete tags)
 async def update_item(session: AsyncSession, update_data: ItemRequest):
-    # Fetch the item by its ID
-    item_id = update_data.id
+    """
+    Updates an item's name and tags.
 
-    stmt = select(Item).where(Item.id == item_id)
-    result = await session.execute(stmt)
-    item = result.scalar_one_or_none()
+    Args:
+        session (`AsyncSession`): The database session.
+        update_data (`ItemRequest`): The update details.
 
-    if not item:
-        raise ItemNotFoundError(f"Item with id {item_id} not found.")
+    Raises:
+        `ItemNotFoundException`: If the item is not found.
 
-    # Update item_name if provided
-    if update_data.item_name:
-        item.item_name = update_data.item_name
-
-    # Replace the tags if provided
-    if update_data.tags is not None:  # Ensure the field was provided in the request
-        new_tags = []
-        for tag_data in update_data.tags:
-
-            tag_name = tag_data.tag_name
-            home_id = tag_data.home_id  # Fetch home_id from the tag data
-
-            # Check if the tag exists in the same home
-            stmt = (
-                select(Tag)
-                .where(Tag.home_id == home_id)
-                .where(func.lower(Tag.tag_name) == func.lower(tag_name))
-            )
-            result = await session.execute(stmt)
-            tag = result.scalar_one_or_none()
-
-            # Create a new tag if it doesn't exist
-            if tag is None:
-                tag = Tag(tag_name=tag_name, home_id=home_id)
-                session.add(tag)
-
-            new_tags.append(tag)
-
-        # Replace the item's tags with the new list
-        item.tags = new_tags
-    elif update_data.tags == []:
-        item.tags = []
-
+    Returns:
+        `Item`: The updated item object.
+    """
     try:
+        item_id = update_data.id
+
+        stmt = select(Item).where(Item.id == item_id)
+        result = await session.execute(stmt)
+        item = result.scalar_one_or_none()
+
+        if not item:
+            raise ItemNotFoundException()
+
+        if update_data.item_name:
+            item.item_name = update_data.item_name
+
+        #if update_data.tags is not None:
+        if update_data.tags:
+            new_tags = []
+            for tag_data in update_data.tags:
+
+                tag_name = tag_data.tag_name
+                home_id = tag_data.home_id
+
+                stmt = (
+                    select(Tag)
+                    .where(Tag.home_id == home_id)
+                    .where(func.lower(Tag.tag_name) == func.lower(tag_name))
+                )
+                result = await session.execute(stmt)
+                tag = result.scalar_one_or_none()
+
+                if tag is None:
+                    tag = Tag(tag_name=tag_name, home_id=home_id)
+                    session.add(tag)
+
+                new_tags.append(tag)
+
+            item.tags = new_tags
+        elif update_data.tags == []:
+            item.tags = []
+
         await session.commit()
-        await session.refresh(item)  # Refresh the item to get the latest state
+        await session.refresh(item)
     except Exception as e:
-        await session.rollback()  # Rollback in case of an error
-        raise e  # Raise the exception to be handled upstream
+        await session.rollback()
+        raise ItemUpdatingException() from e
 
     return item
 
 
-# Save new item to a compartment
 async def save_item(session: AsyncSession, item_data: ItemCreate):
-    # First, fetch the compartment based on comp_id from item_data
+    """
+    Creates and saves a new item in a specified compartment.
+
+    Args:
+        session (`AsyncSession`): The database session.
+        item_data (`ItemCreate`): The details of the new item.
+
+    Raises:
+        `CompartmentNotFoundException`: If the compartment does not exist.
+        `UnspecifiedHomeIdException`: If the associated home cannot be determined.
+
+    Returns:
+        `Item`: The created item object.
+    """
     stmt = select(Compartment).where(Compartment.id == item_data.comp_id)
     result = await session.execute(stmt)
     compartment = result.scalar_one_or_none()
 
     if not compartment:
-        raise CompartmentNotFoundError(
-            f"Compartment with id {item_data.comp_id} not found."
-        )
+        raise CompartmentNotFoundException()
 
-    # Retrieve the associated home_id from the Room model through Compartment -> Furniture -> Room
+
     home_id = (
         await session.execute(
             select(Room.home_id)
@@ -187,18 +259,13 @@ async def save_item(session: AsyncSession, item_data: ItemCreate):
     ).scalar_one_or_none()
 
     if not home_id:
-        raise ValueError(
-            "Home ID could not be determined for the specified compartment."
-        )
+        raise UnspecifiedHomeIdException()
 
-    # Create and add the new Item
     new_item = map_itemCreate_to_item(item_data)
 
-    # Handle tags if provided
     if item_data.tags:
         for tag_name in item_data.tags:
-
-            # Check if tag exists or create a new one
+            
             stmt = (
                 select(Tag)
                 .where(Tag.home_id == home_id)
@@ -207,31 +274,94 @@ async def save_item(session: AsyncSession, item_data: ItemCreate):
             result = await session.execute(stmt)
             tag = result.scalar_one_or_none()
 
-            # If tag doesn't exist, create it
             if tag is None:
                 tag = Tag(tag_name=tag_name, home_id=home_id)
                 session.add(tag)
 
-            # Link the tag to the new item (many-to-many relationship)
             new_item.tags.append(tag)
 
     session.add(new_item)
-    # Commit the changes
     await session.commit()
     await session.refresh(new_item)
 
     return new_item
 
+async def move_item(session: AsyncSession, itemMoveRequest: ItemMoveRequest):
+    """
+    Moves an item to a different compartment, ensuring both compartments belong to the same home.
 
-# Delete an item
+    Args:
+        session (`AsyncSession`): The database session.
+        itemMoveRequest (`ItemMoveRequest`): The details of the move operation.
+
+    Raises:
+        `ItemMovementBetweenHomesNotAllowed`: If the compartments are located in different homes.
+        `ItemNotFoundException`: If the item does not exist.
+    """
+    item : Item = await get_item(session, itemMoveRequest.item_id)
+    
+    change_allowed : bool = are_compartments_in_same_home(session, item.comp_id, itemMoveRequest.comp_id)
+    
+    if not change_allowed:
+        raise ItemMovementBetweenHomesNotAllowed()
+    
+    if not item:
+        raise ItemNotFoundException()
+    
+    item.comp_id = itemMoveRequest.comp_id
+    session.add(item)
+    await session.commit()
+
+async def are_compartments_in_same_home(session: AsyncSession, source_comp_id: int, destination_comp_id) -> bool:
+    """
+    Checks whether two compartments belong to the same home.
+
+    Args:
+        session (`AsyncSession`): The database session.
+        source_comp_id (`int`): The ID of the source compartment.
+        destination_comp_id (`int`): The ID of the destination compartment.
+
+    Returns:
+        `bool`: True if the compartments are in the same home, False otherwise.
+    """
+    source_home_id = (
+        await session.execute(
+            select(Room.home_id)
+            .join(Furniture, Furniture.room_id == Room.id)
+            .join(Compartment, Compartment.furn_id == Furniture.id)
+            .where(Compartment.id == source_comp_id)
+        )
+    ).scalar_one_or_none()
+    
+    destination_home_id = (
+        await session.execute(
+            select(Room.home_id)
+            .join(Furniture, Furniture.room_id == Room.id)
+            .join(Compartment, Compartment.furn_id == Furniture.id)
+            .where(Compartment.id == destination_comp_id)
+        )
+    ).scalar_one_or_none()
+    
+    return source_home_id != destination_home_id
+
+
 async def delete_item(session: AsyncSession, item_id: int):
-    # First find item by id
+    """
+    Deletes an item and clears its associated tags.
+
+    Args:
+        session (`AsyncSession`): The database session.
+        item_id (`int`): The ID of the item to delete.
+
+    Raises:
+        `ItemNotFoundException`: If the item does not exist.
+    """
     stmt = select(Item).where(Item.id == item_id)
     result = await session.execute(stmt)
     item = result.scalar_one_or_none()
 
-    if item is None:
-        raise ItemNotFoundError(f"Item with the ID: {item_id} was not found")
+    if not item:
+        raise ItemNotFoundException()
 
     item.tags = []
 

@@ -11,6 +11,7 @@ import com.example.homeinventoryapp.data.model.home.HomeRequestUpdate
 import com.example.homeinventoryapp.data.model.home.HomeResponse
 import com.example.homeinventoryapp.data.model.home.MyHomesResponse
 import com.example.homeinventoryapp.data.model.homeusers.HomeUsersResponse
+import com.example.homeinventoryapp.data.model.invitation.InvitationInfoResponse
 import com.example.homeinventoryapp.data.model.invitation.InvitationRequestCreate
 import com.example.homeinventoryapp.data.model.invitation.InvitationResponse
 import com.example.homeinventoryapp.data.model.item.ItemDetailResponse
@@ -28,6 +29,8 @@ import com.example.homeinventoryapp.domain.model.Furniture
 import com.example.homeinventoryapp.domain.model.Home
 import com.example.homeinventoryapp.domain.model.HomeUsers
 import com.example.homeinventoryapp.domain.model.Invitation
+import com.example.homeinventoryapp.domain.model.InvitationInfo
+import com.example.homeinventoryapp.domain.model.InvitationToSend
 import com.example.homeinventoryapp.domain.model.Item
 import com.example.homeinventoryapp.domain.model.ItemDetail
 import com.example.homeinventoryapp.domain.model.ItemTag
@@ -111,10 +114,10 @@ fun InvitationResponse.toInvitation(): Invitation {
     )
 }
 
-fun Invitation.toInvitationRequestCreate(): InvitationRequestCreate {
+fun InvitationToSend.toInvitationRequestCreate(): InvitationRequestCreate {
     return InvitationRequestCreate(
         inviterId = inviterId,
-        inviteeId = inviteeId,
+        inviteeUsername = inviteeUsername,
         homeId = homeId
     )
 }
@@ -210,6 +213,14 @@ fun ItemTag.toTagRequest(): TagRequest {
         id = id,
         name = name,
         homeId = homeId
+    )
+}
+
+fun InvitationInfoResponse.toInvitationInfo(): InvitationInfo {
+    return InvitationInfo(
+        id = id,
+        inviterName = inviterName,
+        homeName = homeName
     )
 }
 

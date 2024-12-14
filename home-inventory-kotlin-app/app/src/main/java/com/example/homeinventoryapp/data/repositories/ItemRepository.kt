@@ -1,5 +1,6 @@
 package com.example.homeinventoryapp.data.repositories
 
+import com.example.homeinventoryapp.data.model.item.ItemMoveRequest
 import com.example.homeinventoryapp.data.remote.remoteDataSources.ItemRemoteDataSource
 import com.example.homeinventoryapp.domain.model.Item
 import com.example.homeinventoryapp.domain.model.ItemDetail
@@ -13,6 +14,14 @@ import javax.inject.Inject
 class ItemRepository @Inject constructor(
     private val itemRemoteDataSource: ItemRemoteDataSource
 ) {
+
+    fun moveItem(item: ItemMoveRequest): Flow<NetworkResult<Unit>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = itemRemoteDataSource.moveItem(item)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
 
     fun getItemsByCompartment(id: Int): Flow<NetworkResult<List<Item>>> {
         return flow {

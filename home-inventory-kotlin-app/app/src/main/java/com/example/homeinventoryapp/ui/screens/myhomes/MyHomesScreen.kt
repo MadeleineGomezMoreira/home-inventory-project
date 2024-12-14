@@ -60,6 +60,7 @@ fun MyHomesScreen(
 
     MyHomesContent(
         ownerHomes = uiState.ownerHomes,
+        memberHomes = uiState.memberHomes,
         error = uiState.error,
         isLoading = uiState.isLoading,
         onHomeClicked = { home ->
@@ -128,7 +129,7 @@ fun MyHomesContent(
                 )
             }
             if (memberHomes?.isNotEmpty() == true) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Member Homes", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 HomeListBigCard(

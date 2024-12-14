@@ -56,4 +56,12 @@ class UserRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    fun deleteUser(userId: Int): Flow<NetworkResult<Unit>> {
+        return flow {
+            emit(NetworkResult.Loading())
+            val result = userRemoteDataSource.deleteUser(userId)
+            emit(result)
+        }
+    }
+
 }

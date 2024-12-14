@@ -1,5 +1,6 @@
 package com.example.homeinventoryapp.data.remote.services
 
+import com.example.homeinventoryapp.data.model.invitation.InvitationInfoResponse
 import com.example.homeinventoryapp.data.model.invitation.InvitationRequestCreate
 import com.example.homeinventoryapp.data.model.invitation.InvitationResponse
 import com.example.homeinventoryapp.utils.Constants
@@ -23,4 +24,7 @@ interface InvitationService {
 
     @DELETE(Constants.DECLINE_INVITATION_PATH)
     suspend fun declineInvitation(@Path(Constants.ID_PARAM) id: Int) : Response<Unit>
+
+    @GET(Constants.GET_INVITATION_INFO_PATH)
+    suspend fun getInvitationInfo(@Path(Constants.ID_PARAM) id: Int) : Response<InvitationInfoResponse>
 }
