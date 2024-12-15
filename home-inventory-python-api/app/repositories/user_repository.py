@@ -69,6 +69,7 @@ async def save_user(session: AsyncSession, user: UserCreate):
 
         await session.commit()
         await session.refresh(mapped_user)
+    
 
         return mapped_user
     except Exception as e:
@@ -229,7 +230,7 @@ async def get_user_by_email(session: AsyncSession, email: str):
     """
     stmt = select(User).where(User.email == email)
     result = await session.execute(stmt)
-    user = result.scalar_one_or_none()
+    user = result.scalars().first()
     if not user:
         raise UserNotFoundException()
     return user
@@ -384,7 +385,7 @@ async def send_email(session: AsyncSession, recipient: str):
                 server.login(sender_email, password)
                 server.sendmail(sender_email, receiver_email, msg.as_string())
         except Exception as e:
-            raise MailMessagingException(FAILED_TO_SEND_EMAIL_ERROR) from e
+            raise MailMessagingException(e) from e
 
     except Exception as e:
-        raise MailMessagingException(FAILED_TO_SEND_EMAIL_ERROR) from e
+        raise MailMessagingException(e) from e

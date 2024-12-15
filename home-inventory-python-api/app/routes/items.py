@@ -109,7 +109,6 @@ async def update_single_item(
     Returns:
         ItemResponse: A response containing the updated item details.
     """
-    print(updated_item)
     updated_item = await update_item(db, updated_item)
     return ItemResponse.model_validate(updated_item, from_attributes=True)
 
